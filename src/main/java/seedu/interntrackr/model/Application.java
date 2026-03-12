@@ -7,6 +7,7 @@ public class Application {
     private String company;
     private String role;
     private String status;
+    private Deadline deadline;
 
     /**
      * Constructs an Application with the given company and role.
@@ -18,6 +19,7 @@ public class Application {
         this.company = company;
         this.role = role;
         this.status = "Applied";
+        this.deadline = null;
     }
 
     /**
@@ -31,6 +33,22 @@ public class Application {
         this.company = company;
         this.role = role;
         this.status = status;
+        this.deadline = null;
+    }
+
+    /**
+     * Constructs an Application with the given company, role, status, and deadline.
+     *
+     * @param company  The name of the company.
+     * @param role     The role applied for.
+     * @param status   The current application status.
+     * @param deadline The deadline of this application.
+     */
+    public Application(String company, String role, String status, Deadline deadline) {
+        this.company = company;
+        this.role = role;
+        this.status = status;
+        this.deadline = deadline;
     }
 
     /**
@@ -70,13 +88,31 @@ public class Application {
     }
 
     /**
+     * Returns the deadline of this application.
+     *
+     * @return The deadline.
+     */
+    public Deadline getDeadline() {
+        return deadline;
+    }
+
+    /**
+     * Sets the deadline of this application.
+     *
+     * @param deadline The new deadline.
+     */
+    public void setDeadline(Deadline deadline) {
+        this.deadline = deadline;
+    }
+
+    /**
      * Returns a formatted string representation of this application.
      *
      * @return A human-readable string.
      */
     @Override
     public String toString() {
-        return "Company: " + company + " | Role: " + role + " | Status: " + status;
+        return "Company: " + company + " | Role: " + role + " | Status: " + status + " | Deadline: " + deadline;
     }
 
     /**
@@ -85,6 +121,6 @@ public class Application {
      * @return A storage-formatted string.
      */
     public String toStorageString() {
-        return company + " | " + role + " | " + status;
+        return company + " | " + role + " | " + status + " | " + deadline;
     }
 }
