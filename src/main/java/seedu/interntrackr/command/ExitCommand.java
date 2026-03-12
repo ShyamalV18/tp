@@ -3,7 +3,6 @@ package seedu.interntrackr.command;
 import seedu.interntrackr.model.ApplicationList;
 import seedu.interntrackr.storage.Storage;
 import seedu.interntrackr.ui.Ui;
-import seedu.interntrackr.exception.InternTrackrException;
 
 /**
  * Exits the application.
@@ -11,7 +10,12 @@ import seedu.interntrackr.exception.InternTrackrException;
 public class ExitCommand extends Command {
 
     @Override
-    public void execute(ApplicationList applications, Ui ui, Storage storage) throws InternTrackrException {
-        // TODO: Display exit message and terminate the program
+    public void execute(ApplicationList applications, Ui ui, Storage storage) {
+        ui.showMessage("Bye! Good luck with your internship hunt.");
+    }
+
+    @Override
+    public boolean isExit() {
+        return true;
     }
 }

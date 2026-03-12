@@ -1,13 +1,15 @@
 package seedu.interntrackr;
 
 import seedu.interntrackr.command.Command;
-import seedu.interntrackr.model.Application;
 import seedu.interntrackr.model.ApplicationList;
 import seedu.interntrackr.parser.Parser;
 import seedu.interntrackr.storage.Storage;
 import seedu.interntrackr.ui.Ui;
 import seedu.interntrackr.exception.InternTrackrException;
 
+/**
+ * Initializes and runs the InternTrackr application.
+ */
 public class InternTrackr {
     private Storage storage;
     private ApplicationList applications;
@@ -22,26 +24,25 @@ public class InternTrackr {
             ui.showLoadingError();
             applications = new ApplicationList();
         }
-
-        // --- TEMPORARY DUMMY DATA FOR TESTING ---
-        // REMOVE THIS BEFORE YOUR FINAL MERGE
-        applications.addApplication(new Application("Shopee", "Backend Intern"));
-        applications.addApplication(new Application("Grab", "Data Analyst"));
-        applications.addApplication(new Application("Google", "SWE Intern"));
-        // ----------------------------------------
     }
 
+    /**
+     * Executes the main application loop until the user inputs the exit command.
+     */
     public void run() {
         ui.showWelcome();
         boolean isExit = false;
         while (!isExit) {
             try {
                 String fullCommand = ui.readCommand();
+                ui.showLine(); // Prints a divider before the output
                 Command c = Parser.parse(fullCommand);
                 c.execute(applications, ui, storage);
                 isExit = c.isExit();
             } catch (InternTrackrException e) {
                 ui.showError(e.getMessage());
+            } finally {
+                ui.showLine(); // Prints a divider after the output
             }
         }
     }

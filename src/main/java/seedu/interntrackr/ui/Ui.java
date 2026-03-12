@@ -3,9 +3,10 @@ package seedu.interntrackr.ui;
 import java.util.Scanner;
 
 /**
- * Handles all user interactions, printing to the console and reading input.
+ * Handles terminal reading and writing formatting.
  */
 public class Ui {
+    private static final String LINE = "____________________________________________________________";
     private Scanner in;
 
     public Ui() {
@@ -13,11 +14,21 @@ public class Ui {
     }
 
     public void showWelcome() {
-        System.out.println("Welcome to InternTrackr!");
+        System.out.println(LINE);
+        System.out.println("Welcome to InternTrackr! Ready to hunt for some internships?");
+        System.out.println(LINE);
     }
 
     public String readCommand() {
         return in.nextLine();
+    }
+
+    public void showLine() {
+        System.out.println(LINE);
+    }
+
+    public void showMessage(String message) {
+        System.out.println(message);
     }
 
     public void showError(String message) {
@@ -25,6 +36,6 @@ public class Ui {
     }
 
     public void showLoadingError() {
-        System.out.println("Error loading file. Starting with an empty tracker.");
+        System.out.println("No existing data found. Starting with a fresh tracker.");
     }
 }

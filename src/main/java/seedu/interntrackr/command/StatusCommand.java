@@ -24,12 +24,11 @@ public class StatusCommand extends Command {
             throw new InternTrackrException("Invalid application index.");
         }
 
-        // Adjust for 0-based indexing
-        Application app = applications.getApplication(index - 1);
+        // ApplicationList.getApplication() already handles the 0-based index conversion
+        Application app = applications.getApplication(index);
         app.setStatus(this.status);
 
-        // Printing directly for now; Member 5 can abstract this into Ui.java later
-        System.out.println("Status updated! " + app.getCompanyName() + " is now marked as [" + this.status + "]");
+        ui.showMessage("Status updated! " + app.getCompany() + " is now marked as [" + this.status + "]");
 
         storage.save(applications.getApplications());
     }
