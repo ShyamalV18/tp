@@ -21,60 +21,60 @@ public class Parser {
         String arguments = parts.length > 1 ? parts[1].trim() : "";
 
         switch (commandWord) {
-            case "add":
-                if (!arguments.contains("c/") || !arguments.contains("r/")) {
-                    throw new InternTrackrException("Invalid format. Usage: add c/COMPANY r/ROLE");
-                }
-                return parseAddCommand(arguments);
+        case "add":
+            if (!arguments.contains("c/") || !arguments.contains("r/")) {
+                throw new InternTrackrException("Invalid format. Usage: add c/COMPANY r/ROLE");
+            }
+            return parseAddCommand(arguments);
 
-            case "overview":
-                return new OverviewCommand();
+        case "overview":
+            return new OverviewCommand();
 
-            case "list":
-                return new ListCommand();
+        case "list":
+            return new ListCommand();
 
-            case "status":
-                if (!arguments.contains(" s/")) {
-                    throw new InternTrackrException("Invalid format. Usage: status INDEX s/STATUS");
-                }
-                String[] statusArgs = arguments.split(" s/", 2);
-                try {
-                    int index = Integer.parseInt(statusArgs[0].trim());
-                    String parsedStatus = statusArgs[1].replace("\"", "").trim();
-                    return new StatusCommand(index, parsedStatus);
-                } catch (NumberFormatException e) {
-                    throw new InternTrackrException("The application index must be a number.");
-                }
+        case "status":
+            if (!arguments.contains(" s/")) {
+                throw new InternTrackrException("Invalid format. Usage: status INDEX s/STATUS");
+            }
+            String[] statusArgs = arguments.split(" s/", 2);
+            try {
+                int index = Integer.parseInt(statusArgs[0].trim());
+                String parsedStatus = statusArgs[1].replace("\"", "").trim();
+                return new StatusCommand(index, parsedStatus);
+            } catch (NumberFormatException e) {
+                throw new InternTrackrException("The application index must be a number.");
+            }
 
-            case "delete":
-                if (arguments.isEmpty()) {
-                    throw new InternTrackrException("Invalid format. Usage: delete INDEX");
-                }
-                try {
-                    int deleteIndex = Integer.parseInt(arguments.trim());
-                    return new DeleteCommand(deleteIndex);
-                } catch (NumberFormatException e) {
-                    throw new InternTrackrException("The application index must be a number.");
-                }
+        case "delete":
+            if (arguments.isEmpty()) {
+                throw new InternTrackrException("Invalid format. Usage: delete INDEX");
+            }
+            try {
+                int deleteIndex = Integer.parseInt(arguments.trim());
+                return new DeleteCommand(deleteIndex);
+            } catch (NumberFormatException e) {
+                throw new InternTrackrException("The application index must be a number.");
+            }
 
-            case "filter":
-                if (arguments.isEmpty()) {
-                    throw new InternTrackrException("Invalid format. Usage: filter s/STATUS or filter clear");
-                }
-                if (arguments.equalsIgnoreCase("clear")) {
-                    return new FilterCommand(true);
-                }
-                if (!arguments.startsWith("s/")) {
-                    throw new InternTrackrException("Invalid format. Usage: filter s/STATUS");
-                }
-                String filterStatus = arguments.substring(2).replace("\"", "").trim();
-                return new FilterCommand(filterStatus);
+        case "filter":
+            if (arguments.isEmpty()) {
+                throw new InternTrackrException("Invalid format. Usage: filter s/STATUS or filter clear");
+            }
+            if (arguments.equalsIgnoreCase("clear")) {
+                return new FilterCommand(true);
+            }
+            if (!arguments.startsWith("s/")) {
+                throw new InternTrackrException("Invalid format. Usage: filter s/STATUS");
+            }
+            String filterStatus = arguments.substring(2).replace("\"", "").trim();
+            return new FilterCommand(filterStatus);
 
-            case "exit":
-                return new ExitCommand();
+        case "exit":
+            return new ExitCommand();
 
-            default:
-                throw new InternTrackrException("I'm sorry, but I don't know what that command means :-(");
+        default:
+            throw new InternTrackrException("I'm sorry, but I don't know what that command means :-(");
         }
     }
 
