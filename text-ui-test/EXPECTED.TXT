@@ -3,24 +3,24 @@ Welcome to InternTrackr! Ready to hunt for some internships?
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this application:
-  Company: Google | Role: Software Engineer | Status: Applied
+  Company: Google | Role: Software Engineer | Status: Applied | Deadline: null
 Now you have 1 application(s) in the list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this application:
-  Company: Meta | Role: Data Scientist | Status: Applied
+  Company: Meta | Role: Data Scientist | Status: Applied | Deadline: null
 Now you have 2 application(s) in the list.
 ____________________________________________________________
 ____________________________________________________________
 Got it. I've added this application:
-  Company: Amazon | Role: Backend Engineer | Status: Applied
+  Company: Amazon | Role: Backend Engineer | Status: Applied | Deadline: null
 Now you have 3 application(s) in the list.
 ____________________________________________________________
 ____________________________________________________________
 Here are your internship applications:
-1. Company: Google | Role: Software Engineer | Status: Applied
-2. Company: Meta | Role: Data Scientist | Status: Applied
-3. Company: Amazon | Role: Backend Engineer | Status: Applied
+1. Company: Google | Role: Software Engineer | Status: Applied | Deadline: null
+2. Company: Meta | Role: Data Scientist | Status: Applied | Deadline: null
+3. Company: Amazon | Role: Backend Engineer | Status: Applied | Deadline: null
 ____________________________________________________________
 ____________________________________________________________
 Overview:
@@ -35,24 +35,24 @@ Status updated! Meta is now marked as [interview]
 ____________________________________________________________
 ____________________________________________________________
 Here are the applications with status: applied
-1. Company: Google | Role: Software Engineer | Status: applied
-3. Company: Amazon | Role: Backend Engineer | Status: Applied
+1. Company: Google | Role: Software Engineer | Status: applied | Deadline: null
+3. Company: Amazon | Role: Backend Engineer | Status: Applied | Deadline: null
 ____________________________________________________________
 ____________________________________________________________
 Filter cleared. Showing all applications:
-1. Company: Google | Role: Software Engineer | Status: applied
-2. Company: Meta | Role: Data Scientist | Status: interview
-3. Company: Amazon | Role: Backend Engineer | Status: Applied
+1. Company: Google | Role: Software Engineer | Status: applied | Deadline: null
+2. Company: Meta | Role: Data Scientist | Status: interview | Deadline: null
+3. Company: Amazon | Role: Backend Engineer | Status: Applied | Deadline: null
 ____________________________________________________________
 ____________________________________________________________
 Noted. I've removed this application:
-  Company: Meta | Role: Data Scientist | Status: interview
+  Company: Meta | Role: Data Scientist | Status: interview | Deadline: null
 Now you have 2 application(s) in the list.
 ____________________________________________________________
 ____________________________________________________________
 Here are your internship applications:
-1. Company: Google | Role: Software Engineer | Status: applied
-2. Company: Amazon | Role: Backend Engineer | Status: Applied
+1. Company: Google | Role: Software Engineer | Status: applied | Deadline: null
+2. Company: Amazon | Role: Backend Engineer | Status: Applied | Deadline: null
 ____________________________________________________________
 ____________________________________________________________
 Bye! Good luck with your internship hunt.
