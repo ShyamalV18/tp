@@ -1,5 +1,7 @@
 package seedu.interntrackr.model;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -7,39 +9,14 @@ import java.util.logging.Logger;
  */
 public class Application {
     private static final Logger logger = Logger.getLogger(Application.class.getName());
+    public static final List<String> VALID_STATUSES = Arrays.asList(
+            "Applied", "Pending", "Interview", "Offered", "Rejected", "Accepted"
+    );
 
     private String company;
     private String role;
     private String status;
     private Deadline deadline;
-    public static final String[] VALID_STATUSES = {"Applied", "Pending", "Interview", "Offered", "Rejected", "Accepted"};
-
-    /**
-     * Checks if a status string is valid.
-     *
-     * @param status The status to check.
-     * @return True if the status is valid, false otherwise.
-     */
-    public static boolean isValidStatus(String status) {
-        for (String valid : VALID_STATUSES) {
-            if (valid.equals(status)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Updates the status of this application.
-     * Renamed from setStatus to avoid conflict with the Status class.
-     *
-     * @param status The new status.
-     */
-    public void updateStatus(String status) {
-        assert status != null && !status.isEmpty() : "Status cannot be null or empty";
-        logger.fine("Updating status from " + this.status + " to " + status);
-        this.status = status;
-    }
 
     /**
      * Constructs an Application with the given company and role.
@@ -92,6 +69,10 @@ public class Application {
         this.status = status;
         this.deadline = deadline;
         logger.fine("Created application with deadline: " + company + " | " + role);
+    }
+
+    public static boolean isValidStatus(String status) {
+        return VALID_STATUSES.contains(status);
     }
 
     /**
