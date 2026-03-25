@@ -57,7 +57,16 @@ public class Storage {
                     logger.warning("Corrupted data at line " + lineNumber + ": " + line);
                     throw new InternTrackrException("Corrupted data at line " + lineNumber + ": " + line);
                 }
-                applications.add(new Application(parts[0], parts[1], parts[2]));
+
+                String status = parts[2].trim();
+                if (!Application.isValidStatus(status)) {
+                    logger.warning("Invalid status at line " + lineNumber + ": " + status);
+                    throw new InternTrackrException("Corrupted data at line " + lineNumber
+                            + ": Invalid status '" + status + "'");
+                }
+
+                status = Application.getNormalizedStatus(status);
+                applications.add(new Application(parts[0], parts[1], status));
             }
         } catch (IOException e) {
             logger.severe("Failed to read file: " + e.getMessage());

@@ -1,11 +1,16 @@
 package seedu.interntrackr.model;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * Represents a single internship application.
  */
 public class Application {
+    public static final List<String> VALID_STATUSES = Arrays.asList(
+            "Applied", "Pending", "Interview", "Offered", "Rejected", "Accepted"
+    );
     private static final Logger logger = Logger.getLogger(Application.class.getName());
 
     private String company;
@@ -64,6 +69,24 @@ public class Application {
         this.status = status;
         this.deadline = deadline;
         logger.fine("Created application with deadline: " + company + " | " + role);
+    }
+
+    public static boolean isValidStatus(String status) {
+        for (String valid : VALID_STATUSES) {
+            if (valid.equalsIgnoreCase(status)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String getNormalizedStatus(String status) {
+        for (String valid : VALID_STATUSES) {
+            if (valid.equalsIgnoreCase(status)) {
+                return valid;
+            }
+        }
+        return status;
     }
 
     /**

@@ -41,6 +41,18 @@ public class StatusCommand extends Command {
             throw new InternTrackrException("The new status cannot be empty.");
         }
 
+        if (!Application.isValidStatus(this.status)) {
+            logger.log(Level.WARNING, "Invalid status assigned: " + this.status);
+            throw new InternTrackrException("Invalid status assigned. Please use one of the following:\n"
+                    + "Applied\n"
+                    + "Pending\n"
+                    + "Interview\n"
+                    + "Offered\n"
+                    + "Rejected\n"
+                    + "Accepted");
+        }
+
+        String normalizedStatus = Application.getNormalizedStatus(this.status);
         Application app = applications.getApplication(index);
 
         if (app == null) {
@@ -48,8 +60,8 @@ public class StatusCommand extends Command {
             throw new InternTrackrException("Critical Error: The application at index " + index + " is missing.");
         }
 
-        app.setStatus(this.status);
-        ui.showMessage("Status updated! " + app.getCompany() + " is now marked as [" + this.status + "]");
+        app.setStatus(normalizedStatus);
+        ui.showMessage("Status updated! " + app.getCompany() + " is now marked as [" + normalizedStatus + "]");
 
         try {
             storage.save(applications.getApplications());

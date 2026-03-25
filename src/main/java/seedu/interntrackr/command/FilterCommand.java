@@ -44,19 +44,31 @@ public class FilterCommand extends Command {
             throw new InternTrackrException("Filter status cannot be empty. Use 'filter clear' to reset.");
         }
 
-        ui.showMessage("Here are the applications with status: " + this.status);
+        if (!Application.isValidStatus(this.status)) {
+            logger.log(Level.WARNING, "Invalid filter status: " + this.status);
+            throw new InternTrackrException("Invalid status assigned. Please use one of the following:\n"
+                    + "Applied\n"
+                    + "Pending\n"
+                    + "Interview\n"
+                    + "Offered\n"
+                    + "Rejected\n"
+                    + "Accepted");
+        }
+
+        String searchStatus = Application.getNormalizedStatus(this.status);
+        ui.showMessage("Here are the applications with status: " + searchStatus);
         int matchCount = 0;
 
         for (int i = 1; i <= applications.getSize(); i++) {
             Application app = applications.getApplication(i);
-            if (app != null && app.getStatus().equalsIgnoreCase(this.status)) {
+            if (app != null && app.getStatus().equals(searchStatus)) {
                 ui.showMessage(i + ". " + app.toString());
                 matchCount++;
             }
         }
 
         if (matchCount == 0) {
-            ui.showMessage("No applications found with status: " + this.status);
+            ui.showMessage("No applications found with status: " + searchStatus);
         }
     }
 
