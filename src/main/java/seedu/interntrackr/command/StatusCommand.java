@@ -6,8 +6,6 @@ import seedu.interntrackr.storage.Storage;
 import seedu.interntrackr.ui.Ui;
 import seedu.interntrackr.exception.InternTrackrException;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,9 +14,6 @@ import java.util.logging.Logger;
  */
 public class StatusCommand extends Command {
     private static final Logger logger = Logger.getLogger(StatusCommand.class.getName());
-    private static final List<String> VALID_STATUSES = Arrays.asList(
-            "Applied", "Pending", "Interview", "Offered", "Rejected", "Accepted"
-    );
     private final int index;
     private final String status;
 
@@ -46,7 +41,7 @@ public class StatusCommand extends Command {
             throw new InternTrackrException("The new status cannot be empty.");
         }
 
-        if (!VALID_STATUSES.contains(this.status)) {
+        if (!Application.isValidStatus(this.status)) {
             logger.log(Level.WARNING, "Invalid status assigned: " + this.status);
             throw new InternTrackrException("Invalid status assigned. Please use one of the following:\n"
                     + "Applied\n"
@@ -57,6 +52,7 @@ public class StatusCommand extends Command {
                     + "Accepted");
         }
 
+        String normalizedStatus = Application.getNormalizedStatus(this.status);
         Application app = applications.getApplication(index);
 
         if (app == null) {
@@ -64,8 +60,8 @@ public class StatusCommand extends Command {
             throw new InternTrackrException("Critical Error: The application at index " + index + " is missing.");
         }
 
-        app.setStatus(this.status);
-        ui.showMessage("Status updated! " + app.getCompany() + " is now marked as [" + this.status + "]");
+        app.setStatus(normalizedStatus);
+        ui.showMessage("Status updated! " + app.getCompany() + " is now marked as [" + normalizedStatus + "]");
 
         try {
             storage.save(applications.getApplications());
