@@ -11,7 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Initializes and runs the InternTrackr application.
+ * Main class for the InternTrackr application.
+ * Wires together the UI, storage, and application list,
+ * then drives the read-parse-execute loop until the user exits.
  */
 public class InternTrackr {
     private static final Logger logger = Logger.getLogger(InternTrackr.class.getName());
@@ -20,6 +22,12 @@ public class InternTrackr {
     private ApplicationList applications;
     private Ui ui;
 
+    /**
+     * Constructs an InternTrackr instance and loads existing data from the given file path.
+     * If the file does not exist or contains corrupted data, a fresh empty list is used instead.
+     *
+     * @param filePath Path to the persistent data file; must not be null or blank.
+     */
     public InternTrackr(String filePath) {
         assert filePath != null : "filePath must not be null";
         assert !filePath.isBlank() : "filePath must not be blank";
@@ -44,7 +52,10 @@ public class InternTrackr {
     }
 
     /**
-     * Executes the main application loop until the user inputs the exit command.
+     * Starts the main application loop, repeatedly reading and executing user commands
+     * until an {@link seedu.interntrackr.command.ExitCommand} is issued.
+     * Handles both expected {@link InternTrackrException} errors and unexpected runtime errors
+     * by displaying an error message and continuing the loop.
      */
     public void run() {
         assert ui != null : "Ui must not be null before run()";
@@ -86,6 +97,12 @@ public class InternTrackr {
         logger.info("InternTrackr exiting cleanly.");
     }
 
+    /**
+     * Entry point for the InternTrackr application.
+     * Creates an instance with the default data file path and starts the main loop.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         logger.info("Application starting.");
         new InternTrackr("data/interntrackr.txt").run();
