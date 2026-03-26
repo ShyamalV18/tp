@@ -119,10 +119,10 @@ public class DeadlineCommandTest {
 
         assertEquals(2, lines.size());
         assertEquals(
-                "Google | SWE Intern | Applied | Deadline Type: OA | Due Date: 2026-03-15 | Done: [ ]",
+                "Google | SWE Intern | Applied | OA | 2026-03-15 | false",
                 lines.get(0));
         assertEquals(
-                "Meta | Product Intern | Applied | null",
+                "Meta | Product Intern | Applied",
                 lines.get(1));
     }
 
