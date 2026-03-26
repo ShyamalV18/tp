@@ -1,10 +1,10 @@
 package seedu.interntrackr.command;
 
+import seedu.interntrackr.exception.InternTrackrException;
 import seedu.interntrackr.model.Application;
 import seedu.interntrackr.model.ApplicationList;
 import seedu.interntrackr.storage.Storage;
 import seedu.interntrackr.ui.Ui;
-import seedu.interntrackr.exception.InternTrackrException;
 
 import java.util.logging.Logger;
 
@@ -16,9 +16,13 @@ public class DeleteCommand extends Command {
 
     private final int index;
 
+    /**
+     * Creates a DeleteCommand targeting the application at the specified 1-based index.
+     *
+     * @param index The 1-based index of the application to delete.
+     * @throws IllegalArgumentException If the index is not a positive integer.
+     */
     public DeleteCommand(int index) {
-        assert index > 0 : "Index must be a positive integer (1-based)";
-
         if (index <= 0) {
             throw new IllegalArgumentException("Index must be a positive integer (1-based).");
         }
@@ -27,25 +31,20 @@ public class DeleteCommand extends Command {
         logger.fine("DeleteCommand created for index: " + index);
     }
 
+    /**
+     * Executes the delete command by removing the application at the stored index and saving the result.
+     *
+     * @param applications The current list of applications.
+     * @param ui The UI object used to display output to the user.
+     * @param storage The storage object used to persist the updated list.
+     * @throws InternTrackrException If the index is out of range.
+     */
     @Override
     public void execute(ApplicationList applications, Ui ui, Storage storage) throws InternTrackrException {
         assert applications != null : "ApplicationList must not be null";
         assert ui != null : "Ui must not be null";
         assert storage != null : "Storage must not be null";
         assert index > 0 : "Index must be positive at execution time";
-
-        if (applications == null) {
-            logger.severe("execute() called with null ApplicationList.");
-            throw new InternTrackrException("ApplicationList is null. Cannot delete application.");
-        }
-        if (ui == null) {
-            logger.severe("execute() called with null Ui.");
-            throw new InternTrackrException("Ui is null. Cannot display result.");
-        }
-        if (storage == null) {
-            logger.severe("execute() called with null Storage.");
-            throw new InternTrackrException("Storage is null. Cannot save changes.");
-        }
 
         if (index < 1 || index > applications.getSize()) {
             logger.warning("Delete index " + index + " out of range. List size: " + applications.getSize());

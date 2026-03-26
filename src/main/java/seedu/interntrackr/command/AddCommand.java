@@ -1,10 +1,10 @@
 package seedu.interntrackr.command;
 
+import seedu.interntrackr.exception.InternTrackrException;
 import seedu.interntrackr.model.Application;
 import seedu.interntrackr.model.ApplicationList;
 import seedu.interntrackr.storage.Storage;
 import seedu.interntrackr.ui.Ui;
-import seedu.interntrackr.exception.InternTrackrException;
 
 import java.util.logging.Logger;
 
@@ -17,10 +17,14 @@ public class AddCommand extends Command {
     private final String company;
     private final String role;
 
+    /**
+     * Creates an AddCommand with the specified company and role.
+     *
+     * @param company The name of the company for the internship application.
+     * @param role The role applied for at the company.
+     * @throws IllegalArgumentException If company or role is null or blank.
+     */
     public AddCommand(String company, String role) {
-        assert company != null && !company.isBlank() : "Company must not be null or blank";
-        assert role != null && !role.isBlank() : "Role must not be null or blank";
-
         if (company == null || company.isBlank()) {
             throw new IllegalArgumentException("Company name cannot be null or blank.");
         }
@@ -33,24 +37,19 @@ public class AddCommand extends Command {
         logger.fine("AddCommand created: " + this.company + " | " + this.role);
     }
 
+    /**
+     * Executes the add command by adding a new application to the list and saving it.
+     *
+     * @param applications The current list of applications.
+     * @param ui The UI object used to display output to the user.
+     * @param storage The storage object used to persist the updated list.
+     * @throws InternTrackrException If any required parameter is null.
+     */
     @Override
     public void execute(ApplicationList applications, Ui ui, Storage storage) throws InternTrackrException {
         assert applications != null : "ApplicationList must not be null";
         assert ui != null : "Ui must not be null";
         assert storage != null : "Storage must not be null";
-
-        if (applications == null) {
-            logger.severe("execute() called with null ApplicationList.");
-            throw new InternTrackrException("ApplicationList is null. Cannot add application.");
-        }
-        if (ui == null) {
-            logger.severe("execute() called with null Ui.");
-            throw new InternTrackrException("Ui is null. Cannot display result.");
-        }
-        if (storage == null) {
-            logger.severe("execute() called with null Storage.");
-            throw new InternTrackrException("Storage is null. Cannot save application.");
-        }
 
         logger.info("Executing AddCommand: " + company + " | " + role);
 
