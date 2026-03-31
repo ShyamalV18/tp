@@ -262,11 +262,20 @@ public class Application {
      * @return A storage-formatted string.
      */
     public String toStorageString() {
-        if (deadlines == null || deadlines.getSize() == 0) {
-            return company + " | " + role + " | " + status + " | " + contactName + " | " + contactEmail;
+        StringBuilder sb = new StringBuilder();
+        sb.append(company).append(" | ")
+                .append(role).append(" | ")
+                .append(status).append(" | ")
+                .append(contactName == null ? "" : contactName).append(" | ")
+                .append(contactEmail == null ? "" : contactEmail);
+
+        if (deadlines != null && deadlines.getSize() > 0) {
+            for (Deadline deadline : deadlines.getDeadlines()) {
+                sb.append(" | ").append(deadline.toStorageString());
+            }
         }
-        // Temporary compatibility (supports only one deadline); TODO update storage for multiple deadlines
-        return company + " | " + role + " | " + status + " | " + contactName + " | " + contactEmail + " | " + deadlines.getDeadlines().get(0).toStorageString();
+
+        return sb.toString();
     }
 
     /**
