@@ -261,6 +261,8 @@ public class Application {
      */
     @Override
     public String toString() {
+        String contactName = (this.contactName == null) ? "-" : this.contactName;
+        String contactEmail = (this.contactEmail == null) ? "-" : this.contactEmail;
         return "Company: " + company +
                 " | Role: " + role +
                 " | Status: " + status +
