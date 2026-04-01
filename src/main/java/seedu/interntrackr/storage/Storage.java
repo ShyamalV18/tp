@@ -35,6 +35,7 @@ public class Storage {
 
     /**
      * Loads applications from the data file on disk.
+     * Note: This strictly expects the updated format containing the salary field.
      *
      * @return ArrayList of Application objects.
      * @throws InternTrackrException If the file cannot be read or data is corrupted.
@@ -59,14 +60,11 @@ public class Storage {
                 }
 
                 String[] parts = line.split(" \\| ", -1);
-                if (parts.length < 5) {
-                    logger.warning("Corrupted data at line " + lineNumber + ": " + line);
-                    throw new InternTrackrException("Corrupted data at line " + lineNumber + ": " + line);
-                }
 
-                if ((parts.length - 5) % 3 != 0) {
-                    logger.warning("Corrupted data at line " + lineNumber + ": " + line);
-                    throw new InternTrackrException("Corrupted data at line " + lineNumber + ": " + line);
+                if (parts.length < 6) {
+                    logger.warning("Corrupted data at line " + lineNumber + " (Missing base fields): " + line);
+                    throw new InternTrackrException("Corrupted data at line " + lineNumber + ": " + line
+                            + "\n(Note: If you are using an old save file, please delete it and start fresh).");
                 }
 
                 String company = parts[0].trim();
@@ -83,11 +81,27 @@ public class Storage {
 
                 status = Application.getNormalizedStatus(status);
 
-                DeadlineList deadlineList = new DeadlineList();
-
-                if (parts.length > 5) {
+                String salaryStr = parts[5].trim();
+                Double salary = null;
+                if (!salaryStr.equals("-")) {
                     try {
-                        for (int i = 5; i < parts.length; i += 3) {
+                        salary = Double.parseDouble(salaryStr);
+                    } catch (NumberFormatException e) {
+                        logger.warning("Invalid salary format at line " + lineNumber + ": " + salaryStr);
+                        throw new InternTrackrException("Corrupted salary data at line " + lineNumber
+                                + ": '" + salaryStr + "'");
+                    }
+                }
+
+                if ((parts.length - 6) % 3 != 0) {
+                    logger.warning("Corrupted deadline data at line " + lineNumber + ": " + line);
+                    throw new InternTrackrException("Corrupted deadline data at line " + lineNumber + ": " + line);
+                }
+
+                DeadlineList deadlineList = new DeadlineList();
+                if (parts.length > 6) {
+                    try {
+                        for (int i = 6; i < parts.length; i += 3) {
                             String deadlineType = parts[i].trim();
                             LocalDate dueDate = LocalDate.parse(parts[i + 1].trim());
                             boolean isDone = Boolean.parseBoolean(parts[i + 2].trim());
@@ -95,19 +109,17 @@ public class Storage {
                             Deadline deadline = new Deadline(deadlineType, dueDate, isDone);
                             deadlineList.addDeadline(deadline);
                         }
-
-                        applications.add(new Application(company, role, status,
-                                contactName, contactEmail, deadlineList));
-                        logger.fine("Loaded application with deadline at line " + lineNumber);
                     } catch (DateTimeParseException e) {
                         logger.warning("Invalid deadline date at line " + lineNumber + ": " + line);
                         throw new InternTrackrException("Corrupted deadline date at line "
                                 + lineNumber + ": " + line);
                     }
-                } else {
-                    applications.add(new Application(company, role, status, contactName, contactEmail));
-                    logger.fine("Loaded application without deadline at line " + lineNumber);
                 }
+
+                Application app = new Application(company, role, status, contactName, contactEmail, deadlineList);
+                app.setSalary(salary);
+                applications.add(app);
+                logger.fine("Loaded application at line " + lineNumber);
             }
         } catch (IOException e) {
             logger.severe("Failed to read file: " + e.getMessage());
