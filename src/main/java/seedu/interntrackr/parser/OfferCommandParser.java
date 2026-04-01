@@ -17,8 +17,7 @@ public class OfferCommandParser {
      *
      * @param args The input arguments string (e.g., "1 s/5000").
      * @return A new OfferCommand instance.
-     * @throws InternTrackrException If the user input does not conform to the expected format,
-     * or if the numerical values are invalid.
+     * @throws InternTrackrException If the user input does not conform to the expected format
      */
     public static OfferCommand parse(String args) throws InternTrackrException {
         assert args != null : "Arguments passed to OfferCommandParser cannot be null";
