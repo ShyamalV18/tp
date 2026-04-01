@@ -20,7 +20,7 @@ public class Application {
     private String contactName;
     private String contactEmail;
     private Double salary; // null if no salary/offer details are available
-
+    private String note;
     /**
      * Constructs an Application with the given company and role.
      *
@@ -37,6 +37,7 @@ public class Application {
         this.contactEmail = null;
         this.salary = null;
         this.deadlines = new DeadlineList();
+        this.note = null;
         logger.fine("Created application: " + company + " | " + role);
     }
 
@@ -58,6 +59,7 @@ public class Application {
         this.contactEmail = null;
         this.salary = null;
         this.deadlines = new DeadlineList();
+        this.note = null;
         logger.fine("Created application: " + company + " | " + role + " | " + status);
     }
 
@@ -80,6 +82,7 @@ public class Application {
         this.contactEmail = null;
         this.salary = null;
         this.deadlines = new DeadlineList();
+        this.note = null;
         logger.fine("Created application with contact name: " + company +
                 " | " + role +
                 " | " + status +
@@ -106,6 +109,7 @@ public class Application {
         this.contactEmail = contactEmail;
         this.salary = null;
         this.deadlines = new DeadlineList();
+        this.note = null;
         logger.fine("Created application with contact name and contact email: " + company +
                 " | " + role +
                 " | " + status +
@@ -135,6 +139,7 @@ public class Application {
         this.contactEmail = contactEmail;
         this.salary = null;
         this.deadlines = deadlines;
+        this.note = null;
         logger.fine("Created application with deadlines: " + company +
                 " | " + role +
                 " | " + status +
@@ -261,6 +266,24 @@ public class Application {
     }
 
     /**
+     * Returns the note of this application.
+     *
+     * @return The note, or null if no note has been set.
+     */
+    public String getNote() {
+        return note;
+    }
+
+    /**
+     * Sets the note for this application.
+     *
+     * @param note The note content.
+     */
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    /**
      * Returns the deadlines of this application.
      *
      * @return The deadlines.
@@ -309,7 +332,8 @@ public class Application {
                 .append(status).append(" | ")
                 .append(contactName == null ? "-" : contactName).append(" | ")
                 .append(contactEmail == null ? "-" : contactEmail).append(" | ")
-                .append(salary == null ? "-" : salary);
+                .append(salary == null ? "-" : salary).append(" | ")
+                .append(note == null ? "-" : note);
 
         if (deadlines != null && deadlines.getSize() > 0) {
             for (Deadline deadline : deadlines.getDeadlines()) {

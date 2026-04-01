@@ -53,6 +53,8 @@ public class Parser {
             return OfferCommandParser.parse(arguments);
         case "find":
             return new FindCommandParser().parse(arguments);
+        case "note":                                          // ADD THIS
+            return NoteCommandParser.parse(arguments);
         case "clear":
             return new ClearCommand();
         case "overview":
