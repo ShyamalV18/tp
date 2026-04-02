@@ -168,6 +168,18 @@ Overview includes:
 - Count by status
 - Upcoming deadlines sorted by soonest first
 
+### Clearing all data : `clear`
+
+Clears all internship applications from the list.
+
+**Format:** `clear`
+
+* You will be prompted to type `yes` to confirm the action.
+* This action is irreversible and wipes all saved data.
+
+**Example:**
+* `clear`
+
 ### Exiting the program : `exit`
 
 Exits InternTrackr.
