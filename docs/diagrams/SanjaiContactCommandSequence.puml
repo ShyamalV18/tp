@@ -1,0 +1,37 @@
+@startuml
+actor User
+participant ":Ui" as UI
+participant ":InternTrackr" as IT
+participant ":Parser" as P
+participant "c:ContactCommand" as CC
+participant ":ApplicationList" as AL
+participant "app:Application" as App
+participant ":Storage" as S
+
+User -> UI : types "contact 1 c/HR e/hr@company.com"
+UI -> IT : readCommand()
+IT --> UI : "contact 1 c/HR e/hr@company.com"
+IT -> P : parse("contact 1 ...")
+P --> IT : c (ContactCommand)
+
+IT -> CC : execute(applications, ui, storage)
+
+CC -> AL : getApplication(1)
+AL --> CC : app
+
+CC -> App : setContactName("HR")
+App --> CC
+
+CC -> App : setContactEmail("hr@company.com")
+App --> CC
+
+CC -> UI : showMessage(success messages)
+UI --> CC
+
+CC -> S : save(list)
+S --> CC
+
+CC --> IT
+IT -> UI : showLine()
+UI -> User : displays output
+@enduml

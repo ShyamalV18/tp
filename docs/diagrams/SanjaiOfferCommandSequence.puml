@@ -1,0 +1,37 @@
+@startuml
+actor User
+participant ":Ui" as UI
+participant ":InternTrackr" as IT
+participant ":Parser" as P
+participant "c:OfferCommand" as OC
+participant ":ApplicationList" as AL
+participant "app:Application" as App
+participant ":Storage" as S
+
+User -> UI : types "offer 1 5000"
+UI -> IT : readCommand()
+IT --> UI : "offer 1 5000"
+IT -> P : parse("offer 1 5000")
+P --> IT : c (OfferCommand)
+
+IT -> OC : execute(applications, ui, storage)
+
+OC -> AL : getApplication(1)
+AL --> OC : app
+
+OC -> App : setSalary(5000)
+App --> OC
+
+OC -> App : setStatus("Offered")
+App --> OC
+
+OC -> UI : showMessage(success messages)
+UI --> OC
+
+OC -> S : save(list)
+S --> OC
+
+OC --> IT
+IT -> UI : showLine()
+UI -> User : displays output
+@enduml

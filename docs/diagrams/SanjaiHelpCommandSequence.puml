@@ -1,0 +1,22 @@
+@startuml
+actor User
+participant ":Ui" as UI
+participant ":InternTrackr" as IT
+participant ":Parser" as P
+participant "c:HelpCommand" as HC
+
+User -> UI : types "help"
+UI -> IT : readCommand()
+IT --> UI : "help"
+IT -> P : parse("help")
+P --> IT : c (HelpCommand)
+
+IT -> HC : execute(applications, ui, storage)
+
+HC -> UI : showMessage(User Guide URL)
+UI --> HC
+
+HC --> IT
+IT -> UI : showLine()
+UI -> User : displays output
+@enduml
