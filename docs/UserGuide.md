@@ -20,7 +20,9 @@ Some commands you can try:
 - `help` : Shows help.
 - `add c/"Shopee" r/"Backend Intern"` : Adds a new application.
 - `list` : Lists all applications.
+- `list archive` : Lists all archived applications.
 - `status 1 s/"Interview"` : Updates status of application 1.
+- `archive 1` : Archives application 1.
 - `exit` : Exits the app.
 
 Refer to the [Features](#features) section below for details.
@@ -50,6 +52,10 @@ Adds an internship application.
 
 **Format:** `add c/COMPANY r/ROLE`
 
+- Creates a new application with the given company and role.
+- Prefixes can be provided in any order.
+- Duplicate applications are not allowed.
+
 **Examples:**
 
 - `add c/"Shopee" r/"Backend Intern"`
@@ -73,7 +79,18 @@ Here are your internship applications:
 
 ### Deleting an application : `delete`
 
-```COMING SOON```
+Deletes the specified active application.
+
+**Format:** `delete INDEX`
+
+- Deletes the application at the given `INDEX`.
+- The index refers to the index number shown in the default application list.
+- `INDEX` must be a positive integer 1, 2, 3, ...
+- Archived applications are not shown in the default list, so `delete` applies to the active applications currently displayed.
+
+**Examples:**
+
+- `delete 2`
 
 ### Updating application status : `status`
 
@@ -104,9 +121,37 @@ Updates an application with an offered salary and automatically changes its stat
 
 ### Archiving an application : `archive`
 
-//TODO: Teammates to fill in description.
+Archives an internship application so it no longer appears in the default active application list.
 
 **Format:** `archive INDEX`
+
+- Archives the application at the given `INDEX`.
+- The index refers to the index number shown in the default application list.
+- `INDEX` must be a positive integer 1, 2, 3, ...
+- Archived applications are not deleted. They are hidden from the default `list` view and can still be viewed using `list archive`.
+
+**Examples:**
+
+- `archive 1`
+- `archive 3`
+
+### Listing archived applications : `list archive`
+
+Shows all archived internship applications.
+
+**Format:** `list archive`
+
+- Displays only archived applications.
+- Archived applications are shown using a separate index starting from 1 in the archived view.
+- If an archived application has a note, the note will be displayed below it.
+
+**Example output:**
+```
+Here are your archived internship applications:
+1. Company: Shopee | Role: Backend Intern | Status: Rejected | ...
+   Note: Rejected after OA
+2. Company: Grab | Role: Data Analyst Intern | Status: Offered | ...
+```
 
 ### Adding a contact : `contact`
 
@@ -242,21 +287,23 @@ InternTrackr data is stored as a file in the home folder (for example, under a `
 
 ## Command Summary
 
-| Action             | Format                                       | Example                                                               |
-|--------------------|----------------------------------------------|-----------------------------------------------------------------------|
-| Help               | `help`                                       | `help`                                                                |
-| Add application    | `add c/COMPANY r/ROLE`                       | `add c/"Shopee" r/"Backend Intern"`                                   |
-| List applications  | `list`                                       | `list`                                                                |
-| Find applications  | `find KEYWORD`                               | `find Shopee`                                                         |
-| Update status      | `status INDEX s/STATUS`                      | `status 1 s/"Interview"`                                              |
-| Log an offer       | `offer INDEX SALARY`                         | `offer 1 5000.00`                                                     |
-| Archive application| `archive INDEX`                              | `archive 1`                                                           |
-| Add contact        | `contact INDEX c/NAME e/EMAIL`               | `contact 1 c/"John Doe" e/"john.doe@example.com"`                     |
-| Add note           | `note INDEX n/NOTE_CONTENT`                  | `note 1 n/"Remember to review OOP concepts"`                          |
-| Filter by status   | `filter s/STATUS`                            | `filter s/"Pending"`                                                  |
-| Clear filter       | `filter clear`                               | `filter clear`                                                        |
-| Add deadline       | `deadline add INDEX t/TYPE d/DATE [n/NOTES]` | `deadline add 1 t/Submission d/01-03-2026 n/"Need to reply by email"` |
-| List deadlines     | `deadline list INDEX`                        | `deadline list 1`                                                     |
-| Overview           | `overview`                                   | `overview`                                                            |
-| Clear all data     | `clear`                                      | `clear`                                                               |
-| Exit               | `exit`                                       | `exit`                                                                |
+| Action                     | Format                                       | Example                                                               |
+|----------------------------|----------------------------------------------|-----------------------------------------------------------------------|
+| Help                       | `help`                                       | `help`                                                                |
+| Add application            | `add c/COMPANY r/ROLE`                       | `add c/"Shopee" r/"Backend Intern"`                                   |
+| List applications          | `list`                                       | `list`                                                                |
+| List archived applications | `list archive`                               | `list archive`                                                        |
+| Find applications          | `find KEYWORD`                               | `find Shopee`                                                         |
+| Delete application         | `delete INDEX`                               | `delete 2`                                                            |
+| Update status              | `status INDEX s/STATUS`                      | `status 1 s/"Interview"`                                              |
+| Log an offer               | `offer INDEX SALARY`                         | `offer 1 5000.00`                                                     |
+| Archive application        | `archive INDEX`                              | `archive 1`                                                           |
+| Add contact                | `contact INDEX c/NAME e/EMAIL`               | `contact 1 c/"John Doe" e/"john.doe@example.com"`                     |
+| Add note                   | `note INDEX n/NOTE_CONTENT`                  | `note 1 n/"Remember to review OOP concepts"`                          |
+| Filter by status           | `filter s/STATUS`                            | `filter s/"Pending"`                                                  |
+| Clear filter               | `filter clear`                               | `filter clear`                                                        |
+| Add deadline               | `deadline add INDEX t/TYPE d/DATE [n/NOTES]` | `deadline add 1 t/Submission d/01-03-2026 n/"Need to reply by email"` |
+| List deadlines             | `deadline list INDEX`                        | `deadline list 1`                                                     |
+| Overview                   | `overview`                                   | `overview`                                                            |
+| Clear all data             | `clear`                                      | `clear`                                                               |
+| Exit                       | `exit`                                       | `exit`                                                                |

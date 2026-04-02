@@ -742,7 +742,8 @@ Reduces missed deadlines and confusion caused by scattered notes, emails, and me
 | v2.0    | user     | add notes to an application                                      | jot down interview thoughts or tech stack requirements                      |
 | v2.0    | user     | view all deadlines sorted by date                                | see which deadline is approaching next                                      |
 | v2.0    | user     | search for an application by company name                        | find specific details quickly without scrolling through the entire list     |
-| v2.0    | user     |add recruiter contact information/email to an application         | find who to contact for follow-ups.
+| v2.0    | user     | add recruiter contact information/email to an application        | find who to contact for follow-ups.                                         |
+
 ## Non-Functional Requirements
 
 {Give non-functional requirements}
