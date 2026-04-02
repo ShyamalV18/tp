@@ -72,7 +72,7 @@ public class Parser {
                 logger.fine("Parsed: ListCommand");
                 return new ListCommand();
             }
-            if ("archive".equals(arguments)) {
+            if ("archive".equalsIgnoreCase(arguments)) {
                 logger.fine("Parsed: ListArchiveCommand");
                 return new ListArchiveCommand();
             }
