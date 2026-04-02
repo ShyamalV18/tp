@@ -235,8 +235,7 @@ Here are your archived internship applications:
 2. Company: Meta | Role: Data Scientist | Status: Pending | Salary: - | Contact Name: - | Contact Email: - | Deadlines: null
 ____________________________________________________________
 ____________________________________________________________
-Here are the matching applications in your list:
-2. Company: Meta | Role: Data Scientist | Status: Pending | Salary: - | Contact Name: - | Contact Email: - | Deadlines: null
+No matching applications found.
 ____________________________________________________________
 ____________________________________________________________
 Here are your internship applications:
@@ -291,18 +290,19 @@ ____________________________________________________________
 Error: Index must be a valid number. Usage: note INDEX n/NOTE_CONTENT
 ____________________________________________________________
 ____________________________________________________________
-Error: Invalid index: 99. Please enter a number between 1 and 5.
+Error: Invalid application index. Please provide a number between 1 and 3.
 ____________________________________________________________
 ____________________________________________________________
 Error: Input cannot contain the character '|'.
 ____________________________________________________________
 ____________________________________________________________
-Note updated for: Google | Software Engineer
+Note updated for: Apple | Product Manager
   Note: Strong Java skills required
 ____________________________________________________________
 ____________________________________________________________
 Here are your internship applications:
 1. Company: Apple | Role: Product Manager | Status: Interview | Salary: - | Contact Name: - | Contact Email: - | Deadlines: null
+   Note: Strong Java skills required
 2. Company: Tesla | Role: Hardware Intern | Status: Applied | Salary: - | Contact Name: - | Contact Email: - | Deadlines: null
 3. Company: Microsoft | Role: Cloud Intern | Status: Applied | Salary: - | Contact Name: - | Contact Email: - | Deadlines: null
 ____________________________________________________________
