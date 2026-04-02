@@ -141,6 +141,31 @@ ____________________________________________________________
 Error: Input cannot be empty. Please enter a command.
 ____________________________________________________________
 ____________________________________________________________
+Error: Invalid format. Usage: note INDEX n/NOTE_CONTENT
+____________________________________________________________
+____________________________________________________________
+Error: Invalid format. Usage: note INDEX n/NOTE_CONTENT
+____________________________________________________________
+____________________________________________________________
+Error: Index must be a valid number. Usage: note INDEX n/NOTE_CONTENT
+____________________________________________________________
+____________________________________________________________
+Error: Invalid index: 99. Please enter a number between 1 and 2.
+____________________________________________________________
+____________________________________________________________
+Note updated for: Google | Software Engineer
+  Note: Strong Java skills required
+____________________________________________________________
+____________________________________________________________
+Here are your internship applications:
+1. Company: Google | Role: Software Engineer | Status: Applied | Salary: - | Contact Name: - | Contact Email: - | Deadlines: null
+   Note: Strong Java skills required
+2. Company: Meta | Role: Data Scientist | Status: Applied | Salary: - | Contact Name: - | Contact Email: - | Deadlines: null
+____________________________________________________________
+____________________________________________________________
+Error: Input cannot be empty. Please enter a command.
+____________________________________________________________
+____________________________________________________________
 Are you sure you want to clear all data? Type 'yes' to confirm:
 Clear command cancelled.
 ____________________________________________________________

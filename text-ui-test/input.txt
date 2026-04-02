@@ -39,6 +39,13 @@ delete
 delete abc
 delete 99
 
+note
+note 1
+note abc n/Strong Java skills required
+note 99 n/Strong Java skills required
+note 1 n/Strong Java skills required
+list
+
 clear
 idk
 no
