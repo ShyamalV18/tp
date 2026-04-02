@@ -60,7 +60,7 @@ public class ApplicationList {
     }
 
     /**
-     * Returns the application at the given 1-based index.
+     * Returns the application at the given 1-based index (over the full backing list).
      *
      * @param index The 1-based index.
      * @return The Application object.
@@ -76,9 +76,52 @@ public class ApplicationList {
     }
 
     /**
-     * Returns the number of applications in the list.
+     * Returns the application corresponding to the given 1-based display index
+     * among only the non-archived (active) entries.
      *
-     * @return The size of the list.
+     * <p>Commands such as {@code archive}, {@code delete}, {@code status}, etc.
+     * should use this method so that the index the user provides always matches
+     * what they see in the output of {@code list}.</p>
+     *
+     * @param displayIndex The 1-based index as shown in the {@code list} output.
+     * @return The matching active Application object.
+     * @throws InternTrackrException If the display index is out of range.
+     */
+    public Application getActiveApplication(int displayIndex) throws InternTrackrException {
+        int activeCount = 0;
+        for (Application app : applications) {
+            if (!app.isArchived()) {
+                activeCount++;
+                if (activeCount == displayIndex) {
+                    return app;
+                }
+            }
+        }
+        int totalActive = countActive();
+        logger.warning("Invalid active display index: " + displayIndex + ". Active count: " + totalActive);
+        throw new InternTrackrException("Invalid application index. Please provide a number between 1 and "
+                + totalActive + ".");
+    }
+
+    /**
+     * Returns the number of non-archived (active) applications in the list.
+     *
+     * @return The number of active applications.
+     */
+    public int countActive() {
+        int count = 0;
+        for (Application app : applications) {
+            if (!app.isArchived()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Returns the number of applications in the list (including archived).
+     *
+     * @return The size of the backing list.
      */
     public int getSize() {
         return applications.size();
