@@ -1,0 +1,49 @@
+@startuml
+class Application {
+    - company: String
+    - role: String
+    - status: String
+    - note: String
+    - salary: Double
+    - deadlines: DeadlineList
+    + getNote(): String
+    + setNote(note: String): void
+    + toStorageString(): String
+}
+
+class ApplicationList {
+    - applications: ArrayList<Application>
+    + addApplication(app: Application): void
+    + deleteApplication(index: int): void
+    + getApplication(index: int): Application
+    + getApplications(): List<Application>
+    + getSize(): int
+}
+
+class Storage {
+    - filePath: String
+    + load(): ArrayList<Application>
+    + save(applications: List<Application>): void
+    - parseLine(line: String, lineNumber: int): Application
+    - parseStatus(statusStr: String, lineNumber: int): String
+    - parseSalary(salaryStr: String, lineNumber: int): Double
+    - parseNote(noteStr: String): String
+    - parseDeadlines(parts: String[], lineNumber: int, line: String): DeadlineList
+}
+
+class NoteCommand {
+    - index: int
+    - note: String
+    + execute(applications, ui, storage): void
+}
+
+class ListCommand {
+    + execute(applications, ui, storage): void
+}
+
+ApplicationList "1" *-- "0..*" Application
+NoteCommand --> ApplicationList : reads/writes
+NoteCommand --> Storage : saves
+ListCommand --> ApplicationList : reads
+Storage --> Application : creates
+@enduml

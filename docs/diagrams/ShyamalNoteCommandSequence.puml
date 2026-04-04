@@ -1,0 +1,25 @@
+@startuml
+actor User
+participant ":Ui" as UI
+participant ":InternTrackr" as IT
+participant ":Parser" as P
+participant "c:NoteCommand" as NC
+participant ":ApplicationList" as AL
+participant ":Application" as A
+participant ":Storage" as S
+
+User -> UI : types "note 1 n/Strong Java skills"
+IT -> UI : readCommand()
+UI --> IT : "note 1 n/Strong Java skills"
+IT -> P : parse("note 1 n/Strong Java skills")
+P --> IT : c (NoteCommand)
+IT -> NC : execute(applications, ui, storage)
+NC -> AL : getApplication(1)
+AL --> NC : application
+NC -> A : setNote("Strong Java skills")
+A --> NC : done
+NC -> S : save(applications)
+S --> NC : done
+NC -> UI : showMessage("Note updated for: ...")
+UI --> User : displays confirmation
+@enduml

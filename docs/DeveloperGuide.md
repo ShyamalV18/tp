@@ -157,7 +157,7 @@ each with its own deadline. Supporting multiple deadlines improves realism and e
 
 <!-- @@author Shyamal -->
 
-### Storage, Model, and List Feature Implementation
+### Storage, Model, List, and Note Feature Implementation
 
 **Author:** Shyamal
 
@@ -172,13 +172,13 @@ survives between sessions without requiring a database.
 **1.1 File Format**
 
 Each application is stored as a single pipe-delimited line in `data/interntrackr.txt`.
-There are multiple possible formats depending on the fields present:
-```
-company | role | status
-company | role | status | contactName | contactEmail
-company | role | status | contactName | contactEmail | deadlineType | dueDate | isDone 
-```
-Each application may have zero or more deadlines appended to the end of the line.
+The format is as follows:
+company | role | status | contactName | contactEmail | salary | note
+company | role | status | contactName | contactEmail | salary | note | deadlineType | dueDate | isDone ...
+
+- The first 7 fields are always present. Fields with no value are stored as `-`.
+- Each deadline appends 3 additional fields: `deadlineType`, `dueDate`, `isDone`.
+- Multiple deadlines are supported by repeating the 3-field group.
 
 This format was chosen because it is human-readable and easy to edit manually,
 satisfying the course constraint of using a human-editable storage format.
@@ -193,14 +193,18 @@ if it does not exist yet.
 **1.3 Loading Applications**
 
 On startup, `Storage#load()` reads the file line by line and reconstructs
-`Application` objects. The method handles two cases:
+`Application` objects. To keep the method readable and follow SLAP,
+the parsing logic is split into focused helper methods:
 
-The method handles variable-length input:
+- `parseLine()` — coordinates field extraction and delegates to helpers
+- `parseStatus()` — validates and normalizes the status field
+- `parseSalary()` — parses the optional salary field
+- `parseNote()` — parses the optional note field
+- `parseDeadlines()` — reconstructs `Deadline` objects from remaining fields
 
-* First 3 fields → `company`, `role`, `status`
-* Next 2 fields (optional) → `contactName`, `contactEmail`
-* Remaining fields → parsed in groups of 3 as deadlines:
-  * `deadlineType`, `dueDate`, `isDone`
+Any line with fewer than 7 parts, an unrecognised status, an unparseable date,
+or a malformed salary throws an `InternTrackrException` with the corrupted line
+number for easy user diagnosis.
 
 The sequence diagram below shows how `Storage#load()` behaves during app startup:
 
@@ -212,27 +216,27 @@ The sequence diagram below shows how `Storage#save()` is triggered after a comma
 
 **1.4 Design Considerations**
 
-**Aspect: Storage format for deadlines**
+**Aspect: Storage format for optional fields**
 
-* **Alternative 1:** Store each application and its deadline as separate lines,
-  linked by an index.
-  * Pros: Cleaner separation of concerns.
-  * Cons: Harder to parse, more error-prone, breaks human-editability.
-* **Alternative 2 (Current Choice):** Inline the deadline fields into the same line
-  as the application using additional pipe-separated fields.
-  * Pros: Simple to parse, easy to read and edit manually, single source of truth per application.
-  * Cons: The line gets longer when a deadline is present, but remains readable.
+* **Alternative 1:** Store each application and its optional fields (deadline, note, salary)
+  as separate lines linked by an index.
+  + Pros: Cleaner separation of concerns.
+  + Cons: Harder to parse, more error-prone, breaks human-editability.
+* **Alternative 2 (Current Choice):** Inline all fields into the same pipe-delimited line,
+  using `-` as a placeholder for absent values.
+  + Pros: Simple to parse, easy to read and edit manually, single source of truth per application.
+  + Cons: Lines grow longer with more fields, but remain readable.
 
 **Aspect: Handling corrupted data**
 
 * **Alternative 1:** Skip corrupted lines silently and continue loading.
-  * Pros: App always starts up even with bad data.
-  * Cons: Silent data loss — the user would never know entries were dropped.
+  + Pros: App always starts up even with bad data.
+  + Cons: Silent data loss — the user would never know entries were dropped.
 * **Alternative 2 (Current Choice):** Throw an `InternTrackrException` immediately
   and start with an empty list.
-  * Pros: The user is explicitly warned that their data file is corrupted.
-  * Cons: All data becomes inaccessible until the user fixes the file manually.
-  * **Reasoning:** Transparency about data integrity is more important than convenience.
+  + Pros: The user is explicitly warned that their data file is corrupted.
+  + Cons: All data becomes inaccessible until the user fixes the file manually.
+  + **Reasoning:** Transparency about data integrity is more important than convenience.
     The text format makes it easy for the user to inspect and fix the file themselves.
 
 ---
@@ -241,6 +245,10 @@ The sequence diagram below shows how `Storage#save()` is triggered after a comma
 
 The `ApplicationList` class manages the in-memory list of applications. Two key
 defensive design decisions were made to prevent misuse by other components.
+
+The class diagram below shows the relationships between the key classes in this author's section:
+
+![Class Diagram](images/ShyamalClassDiagram.png)
 
 **2.1 Unmodifiable List**
 
@@ -273,36 +281,17 @@ if (index < 1 || index > applications.size()) {
 
 This prevents `IndexOutOfBoundsException` from propagating up to the user as a
 cryptic crash.
-          
-<!-- @@eugenia-cnl-lee -->         
-**2.3 Refactoring Application to support multiple deadlines**
 
-Originally, each `Application` stored only a single `Deadline`.
-This design limited the system to one deadline per application.
-To support more realistic workflows, the model was extended to allow multiple deadlines per application.
+---
 
-***Rationale***
-
-Internship processes typically involve multiple stages, each with its own deadline
-(e.g. online assessments, interviews, offer acceptance).
-Supporting only a single deadline restricts usability and prevents implementation of features such as deadline listing.
-
-***Impact***
-
-This refactor required coordinated updates across:
-- Model
-- Commands
-- Storage
-
-Despite increased complexity, this improves extensibility and aligns the system with real-world usage.
-
-<!-- @@author -->
+#### 3. ListCommand and UI Abstraction
 
 **3.1 Implementation**
 
 `ListCommand#execute()` iterates over the `ApplicationList` using 1-based indices
 and calls `Ui#showMessage()` for each entry. If the list is empty, a friendly prompt
-is shown instead.
+is shown instead. If an application has a note, it is displayed indented on the
+next line beneath the application details, only when non-null and non-blank.
 
 **3.2 Design Rationale: Using `Ui` instead of `System.out`**
 
@@ -313,11 +302,78 @@ in the codebase.
 * **Why it matters:** Commands that bypass `Ui` are untestable — you cannot intercept
   or assert on `System.out` output in JUnit tests without capturing streams.
   By routing all output through `Ui`, tests can subclass `Ui` with a capturing
-  override (as seen in `DeadlineCommandTest`) to verify output without touching the console.
+  override (as seen in `DeadlineAddCommandTest`) to verify output without touching
+  the console.
 
 The sequence diagram below shows the full flow of the `list` command:
 
 ![List Command Sequence Diagram](images/ShyamalListCommandSequence.png)
+
+---
+
+#### 4. Note Feature Implementation
+
+The `note` command allows users to attach free-text insights to a specific
+internship application. This is useful for recording interview impressions,
+tech stack requirements, or any other application-specific details that do not
+fit into the structured fields.
+
+**4.1 Implementation Details**
+
+The feature is implemented through `NoteCommand` and `NoteCommandParser`.
+
+**4.1.1 Parsing Logic**
+
+The `NoteCommandParser#parse()` method processes the user input as follows:
+
+1. **Blank Check:** Verifies the argument is not null or blank; throws an
+   `InternTrackrException` if so.
+2. **Prefix Check:** Verifies the ` n/` prefix is present; throws an
+   `InternTrackrException` if missing.
+3. **Split:** Splits the argument on ` n/` to separate the index and note content.
+4. **Content Check:** Verifies the note content is not blank.
+5. **Index Parse:** Parses the index as a positive integer; throws an
+   `InternTrackrException` for non-numeric or non-positive values.
+
+**4.1.2 Execution Logic**
+
+When `NoteCommand#execute()` is called:
+
+1. It uses `ApplicationList#getApplication()` to retrieve the target application,
+   which performs bounds checking automatically.
+2. It calls `Application#setNote()` to update the note field, overwriting any
+   previously stored note.
+3. It immediately calls `Storage#save()` to persist the note to disk.
+4. It displays a confirmation message via `Ui`.
+
+The sequence diagram below shows the full flow of the `note` command:
+
+![Note Command Sequence Diagram](images/ShyamalNoteCommandSequence.png)
+
+**4.2 Design Considerations**
+
+**Aspect: Overwrite vs. append behaviour**
+
+* **Alternative 1:** Append new note content to any existing note.
+  + Pros: Users can build up notes over time without retyping previous content.
+  + Cons: Notes can grow uncontrollably long and become hard to manage.
+* **Alternative 2 (Current Choice):** Overwrite the existing note entirely.
+  + Pros: Simple and predictable — the user always knows exactly what the note contains.
+  + Cons: Previous note content is lost unless the user manually includes it.
+  + **Reasoning:** Overwrite behaviour is simpler to implement, easier to reason about,
+    and consistent with how `status` updates work. Users who want to preserve
+    previous content can simply re-read the list and retype.
+
+**Aspect: Storing note as a separate file vs. inline**
+
+* **Alternative 1:** Store notes in a separate file indexed by application number.
+  + Pros: Keeps the main data file shorter.
+  + Cons: Introduces a second file to manage, complicates the storage logic,
+    and breaks the single-file human-editable constraint.
+* **Alternative 2 (Current Choice):** Store the note inline as a pipe-delimited field.
+  + Pros: Keeps all application data in one place, consistent with the existing format.
+  + Cons: Notes containing the ` | ` separator could theoretically cause parsing issues,
+    mitigated by using ` | ` as the delimiter and restricting notes from containing it.
 
 <!-- @@author -->
 
