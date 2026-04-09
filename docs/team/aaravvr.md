@@ -31,11 +31,16 @@ deadlines or lose track across spreadsheets, notes, and emails.
   entries and determine whether to show the header, then to display them — producing clean output with no orphaned
   headers.
 
+* **Restoring archived applications (`unarchive` command)**: Implemented the command to restore an archived
+  application back to the active list. The index is resolved against archived entries only via
+  `ApplicationList#getArchivedApplication()`, matching the index the user sees in `list archive`. The restored
+  application immediately reappears in the default `list` output.
+
 * **Parser redesign (split into `XYZCommandParser` classes)**: Refactored the original monolithic `Parser.java`
   (~100 lines of inline parsing logic) into a centralized dispatcher backed by dedicated per-command parser classes
-  (`AddCommandParser`, `DeleteCommandParser`, `ArchiveCommandParser`, etc.). This keeps `Parser.java` as a thin
-  switch-based router and makes each parser independently testable. Also added pipe character (`|`) rejection to
-  protect the storage format.
+  (`AddCommandParser`, `DeleteCommandParser`, `ArchiveCommandParser`, `UnarchiveCommandParser`, etc.). This keeps
+  `Parser.java` as a thin switch-based router and makes each parser independently testable. Also added pipe
+  character (`|`) rejection to protect the storage format.
 
 ### 2. Code Contributed
 
@@ -43,9 +48,13 @@ deadlines or lose track across spreadsheets, notes, and emails.
 
 ### 3. Enhancements and Bug Fixes
 
-* **Active-index-aware delete**: Extended `ApplicationList` with `getActiveApplication(int displayIndex)` and
-  `countActive()` to support index resolution against non-archived entries only. This was necessary to keep `delete`
-  and `archive` consistent with the display indices shown in `list`.
+* **Active-index-aware delete and archive**: Extended `ApplicationList` with `getActiveApplication(int displayIndex)`
+  and `countActive()` to support index resolution against non-archived entries only. This was necessary to keep
+  `delete` and `archive` consistent with the display indices shown in `list`.
+
+* **Archived-index-aware unarchive**: Extended `ApplicationList` with `getArchivedApplication(int displayIndex)` and
+  `countArchived()` to support index resolution against archived entries only, keeping `unarchive` consistent with
+  the display indices shown in `list archive`.
 
 * **Storage format for `isArchived`**: Designed a backward-compatible storage encoding for the archived state.
   Rather than appending a plain `true`/`false` (which conflicts with a completed deadline's `isDone` field), the
@@ -56,7 +65,7 @@ deadlines or lose track across spreadsheets, notes, and emails.
   shows active entries. The empty-list message is shown only when there are no active entries.
 
 * **Defensive coding**: Added assertions and input validation to `AddCommand`, `DeleteCommand`, `ArchiveCommand`,
-  and `ListArchiveCommand` meeting the Week 9 code defensiveness requirements.
+  `UnarchiveCommand`, and `ListArchiveCommand` meeting the Week 9 code defensiveness requirements.
 
 ---
 
@@ -77,6 +86,11 @@ deadlines or lose track across spreadsheets, notes, and emails.
 > **Format:** `archive INDEX`
 > * **Example:** `archive 1`
 >
+> #### **Restoring an archived application: `unarchive`**
+> Restores an archived application back to the active list. The index refers to the index shown in `list archive`.
+> **Format:** `unarchive INDEX`
+> * **Example:** `unarchive 1`
+>
 > #### **Listing archived applications: `list archive`**
 > Displays all archived applications using a sequential index starting from 1.
 > **Format:** `list archive`
@@ -89,13 +103,17 @@ deadlines or lose track across spreadsheets, notes, and emails.
 > The `add` command uses `AddCommandParser` to support prefix-flexible input (`c/` and `r/` in any order). `AddCommand#execute()` checks `ApplicationList#hasApplication()` to reject duplicates before insertion, then calls `Storage#save()` to persist the new entry immediately.
 >
 > #### **Delete Feature Implementation**
-> The `delete` command resolves the display index against active (non-archived) entries only via `ApplicationList#getActiveApplication()`. A linear scan by object identity then locates the backing-list position for safe removal, ensuring the index always matches what the user sees in `list`.
+> The `delete` command resolves the display index against active (non-archived) entries only via `ApplicationList#getActiveApplication()`. A linear scan by object identity then locates the backing-list position for safe removal, ensuring the index always matches what the user sees in `list`. The confirmation message shows the remaining active count via `ApplicationList#countActive()`.
 >
 > #### **Parser Implementation**
-> The original `Parser.java` was refactored from a ~100-line monolithic method into a centralized dispatcher backed by dedicated `XYZCommandParser` classes (`AddCommandParser`, `DeleteCommandParser`, `ArchiveCommandParser`, etc.). `Parser.java` now acts as a thin switch-based router. Pipe character (`|`) input is also rejected to protect the storage format.
+> The original `Parser.java` was refactored from a ~100-line monolithic method into a centralized dispatcher backed by dedicated `XYZCommandParser` classes (`AddCommandParser`, `DeleteCommandParser`, `ArchiveCommandParser`, `UnarchiveCommandParser`, etc.). `Parser.java` now acts as a thin switch-based router. Pipe character (`|`) input is also rejected to protect the storage format.
 >
 > #### **Archive Feature Implementation**
 > The `archive` command resolves the display index via `ApplicationList#getActiveApplication()` and sets `Application#isArchived` to `true`. The archived state is stored using the token `| archived:true`, only appended when the application is archived, to avoid conflict with deadline `isDone` fields.
 >
 > #### **List Archive Feature Implementation**
 > `ListArchiveCommand` performs a two-pass iteration — first to count archived entries, then to display them with a sequential index. This avoids printing an orphaned header when no archived applications exist.
+>
+> #### **Unarchive Feature Implementation**
+> The `unarchive` command resolves the display index against archived entries only via `ApplicationList#getArchivedApplication()`, ensuring the index matches what the user sees in `list archive`. `Application#setArchived(false)` restores the application, which immediately reappears in the default `list` output. The design is intentionally symmetric with `archive`.
+> 
