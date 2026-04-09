@@ -259,7 +259,7 @@ Adds an important deadline linked to an application.
 
 ### Listing deadlines : `deadline list`
 
-Shows all deadlines linked to a specific application.
+Shows a list of all the deadlines linked to a specific application.
 
 **Format:** `deadline list INDEX`
 
@@ -269,6 +269,13 @@ Shows all deadlines linked to a specific application.
 **Example:**
 
 - `deadline list 1`
+
+**Example output:**
+```
+Here are the deadlines for this application:
+1. Deadline Type: Submission | Due Date: 2026-03-01 | Done: [ ]
+2. Deadline Type: OfferExpiry | Due Date: 2026-03-10 | Done: [ ]
+```
 
 ### Marking a deadline as done : `deadline done`
 
