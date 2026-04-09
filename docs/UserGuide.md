@@ -5,7 +5,7 @@ InternTrackr is a CLI-first internship application manager for university studen
 ## Quick Start
 
 1. Ensure you have **Java 17** or above installed.
-2. Download the latest `interntrackr.jar`.
+2. Download the latest `internTrackr.jar`.
 3. Copy the jar file into the folder you want to use as the home folder for Interntrackr.
 4. Open a terminal, `cd` into that folder, and run:
 
