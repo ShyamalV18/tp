@@ -2,7 +2,8 @@
 
 ## Acknowledgements
 
-{list here sources of all reused/adapted ideas, code, documentation, and third-party libraries -- include links to the original source as well}
+* **SE-EDU Initiative:** The overall architecture of this application (particularly the separation of `Ui`, `Parser`, `Storage`, and `Command` classes) was inspired by the [SE-EDU AddressBook-Level2 and Duke/ip projects](https://se-education.org/), created for software engineering education.
+* **Libraries:** This project relies solely on standard Java 11/17 libraries for core execution. [JUnit 5](https://junit.org/junit5/) is used for automated unit testing.
 
 ## Design & implementation
 
@@ -909,4 +910,248 @@ Reduces missed deadlines and confusion caused by scattered notes, emails, and me
 
 ## Instructions for manual testing
 
-{Give instructions on how to do a manual product testing e.g., how to load sample data to be used for testing}
+Given below are instructions to test the app manually.
+
+> **Note:** These instructions only provide a starting point for testers to verify the core application logic. Testers are expected to do more exploratory testing.
+
+### 1. Launch and Shutdown
+
+#### Initial launch
+
+1. Download the latest `internTrackr.jar` file and copy it into an empty folder.
+2. Open your command terminal, navigate to the folder, and run the command:
+
+```bash
+java -jar internTrackr.jar
+```
+
+**Expected:** You should see the welcome message:
+
+```text
+Welcome to InternTrackr! Ready to hunt for some internships?
+```
+
+#### Shutdown
+
+1. Type `exit` and press Enter.
+
+**Expected:** The app prints a goodbye message:
+
+```text
+Bye! Good luck with your internship hunt.
+```
+
+The application terminates safely. A `data` folder containing an empty `interntrackr.txt` file should now exist in the same directory.
+
+### 2. Loading Sample Data
+
+To test features like filtering, archiving, and overviews without manually typing dozens of commands, you can load sample data directly into the storage file.
+
+1. Ensure the app is closed.
+2. Navigate to the `data` folder and open `interntrackr.txt` in any text editor.
+3. Replace the contents of the file with the following valid data strings:
+
+```text
+Google | Software Engineer Intern | Applied | - | - | - | Leetcode Hard expected
+Meta | Data Scientist | Interview | John Doe | john@meta.com | - | - | OA | 2026-10-12 | true | Tech Round | 2026-11-01 | false
+Netflix | Backend Intern | Rejected | - | - | - | - | archived:true
+TikTok | iOS Engineer | Offered | Jane Tan | jane@tiktok.com | 6500.0 | Great benefits
+Apple | Hardware Intern | Pending | - | - | - | -
+```
+
+4. Save the file and relaunch the app:
+
+```bash
+java -jar internTrackr.jar
+```
+
+5. Run the `list` command.
+
+**Expected:** You should see **4 active applications**: Google, Meta, TikTok, and Apple. Netflix should be hidden as it is archived.
+
+### 3. Testing Core Features
+
+With the sample data loaded, you can test the following commands.
+
+#### 3.1 Tracking and Modifying Applications
+
+**Test:**
+
+```text
+status 1 s/Interview
+```
+
+**Expected:** Google's status changes from `"Applied"` to `"Interview"`.
+
+**Test:**
+
+```text
+offer 3 s/7000.50
+```
+
+> TikTok is at index 3 in the active list.
+
+**Expected:** TikTok's salary is updated to `$7000.50`.
+
+**Test:**
+
+```text
+contact 4 c/Tim Cook e/tim@apple.com
+```
+
+**Expected:** Apple's contact details are successfully updated.
+
+**Test:**
+
+```text
+note 1 n/Review OOP concepts
+```
+
+**Expected:** Google's note is updated and will appear below it in the list view.
+
+#### 3.2 Viewing and Filtering
+
+**Test:**
+
+```text
+overview
+```
+
+**Expected:** Shows total tracked applications and a breakdown tally of statuses (e.g., `1 Applied`, `1 Pending`, etc.).
+
+**Test:**
+
+```text
+filter s/Interview
+```
+
+**Expected:** Only Google (after the step above) and Meta are listed.
+
+**Test:**
+
+```text
+filter clear
+```
+
+**Expected:** The filter is removed and all active applications are shown again.
+
+**Test:**
+
+```text
+find Intern
+```
+
+**Expected:** Lists Google and Apple based on the role names.
+
+#### 3.3 Archiving
+
+**Test:**
+
+```text
+archive 1
+```
+
+> Archives Google.
+
+**Expected:** Google is removed from the list view.
+
+**Test:**
+
+```text
+list archive
+```
+
+**Expected:** Shows Google and Netflix.
+
+**Test:**
+
+```text
+unarchive 2
+```
+
+> Assuming Netflix is index 2 in the archive list.
+
+**Expected:** Netflix is restored to the active list view.
+
+#### 3.4 Deadlines
+
+**Test:**
+
+```text
+deadline list 2
+```
+
+> Assuming Meta is at index 2 in the active list.
+
+**Expected:** Lists the `"OA"` (`Done`) and `"Tech Round"` (`Not Done`) deadlines.
+
+**Test:**
+
+```text
+deadline add 2 t/Final Fit Interview d/15-11-2026
+```
+
+**Expected:** Adds a third deadline to Meta.
+
+**Test:**
+
+```text
+deadline done 2 i/2
+```
+
+**Expected:** Marks the `"Tech Round"` deadline as completed `[X]`.
+
+### 4. Testing Error and Data Corruption Handling
+
+#### 4.1 Invalid User Input
+
+**Test:** Type random text like:
+
+```text
+hello world
+```
+
+**Expected:** Fails gracefully with:
+
+```text
+Error: I'm sorry, but I don't know what that command means :-(
+```
+
+**Test:**
+
+```text
+add c/"Shopee"
+```
+
+> Missing role prefix.
+
+**Expected:** Fails with:
+
+```text
+Error: Invalid format. Usage: add c/COMPANY r/ROLE
+```
+
+**Test:**
+
+```text
+offer 1 s/abc
+```
+
+> Invalid salary.
+
+**Expected:** Fails with:
+
+```text
+Error: Index and salary must be valid numerical values.
+```
+
+#### 4.2 Storage File Corruption
+
+1. Close the application.
+2. Open `data/interntrackr.txt` and intentionally corrupt a line.
+
+  * For example, delete a `|` separator so a line has fewer than 7 fields.
+  * Or change a deadline date to `not-a-date`.
+3. Relaunch the application.
+
+**Expected:** The app catches the corruption (via `InternTrackrException`), prevents a fatal crash, and boots safely into an empty list state.
