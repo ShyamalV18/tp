@@ -239,12 +239,18 @@ Finds applications whose company name or role contains the specified keyword.
 
 ### Adding a deadline : `deadline add`
 
-Adds an important date linked to an application (deadline, submission date, offer expiry).
+Adds an important deadline linked to an application.
 
 **Format:** `deadline add INDEX t/TYPE d/DATE [n/NOTES]`
 
-- `TYPE` describes the deadline type (example values: Submission, OfferExpiry).
+- `INDEX` refers to the application's index number shown in the default application list.
+- `INDEX` must be a positive integer 1, 2, 3, ...
+- `TYPE` describes the deadline type.
 - `DATE` must be in `DD-MM-YYYY`.
+
+> **Note:** One application can contain multiple deadlines.
+> Running `deadline add` on an application that already has deadline(s) linked to it will
+> **not** overwrite the previous deadlines.
 
 **Examples:**
 
