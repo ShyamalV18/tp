@@ -99,6 +99,9 @@ public class ApplicationList {
         }
         int totalActive = countActive();
         logger.warning("Invalid active display index: " + displayIndex + ". Active count: " + totalActive);
+        if (totalActive == 0) {
+            throw new InternTrackrException("No applications found. Start adding some!");
+        }
         throw new InternTrackrException("Invalid application index. Please provide a number between 1 and "
                 + totalActive + ".");
     }
