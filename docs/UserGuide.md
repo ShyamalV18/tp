@@ -73,6 +73,9 @@ directly below that application's details.
 
 **Format:** `list`
 
+- Only active (non-archived) applications are shown.
+  Use `list archive` to view archived applications.
+
 **Example output:**
 ```
 Here are your internship applications:
@@ -203,7 +206,8 @@ or any other application-specific insights.
 
 - Adds or **overwrites** the existing note for the application at `INDEX`.
 - `INDEX` must be a positive integer 1, 2, 3, ...
-- `NOTE_CONTENT` can contain any text including spaces and special characters.
+- `NOTE_CONTENT` can contain any text including spaces and special characters,
+  except the pipe character (`|`) which is reserved for internal storage.
 
 **Examples:**
 
@@ -373,7 +377,7 @@ InternTrackr data is stored as a file in the home folder (for example, under a `
 | Clear filter                 | `filter clear`                               | `filter clear`                                          |
 | Add deadline                 | `deadline add INDEX t/TYPE d/DATE [n/NOTES]` | `deadline add 1 t/Submission d/01-03-2026 n/Need to reply by email` |
 | List deadlines               | `deadline list INDEX`                        | `deadline list 1`                                       |
-| Mark deadline as done        | `deadline done INDEX i/DEADLINE_INDEX`       | `deadline done INDEX i/DEADLINE_INDEX`                  |
+| Mark deadline as done        | `deadline done INDEX i/DEADLINE_INDEX`       | `deadline done 1 i/1`                                   |
 | Overview                     | `overview`                                   | `overview`                                              |
 | Clear all data               | `clear`                                      | `clear`                                                 |
 | Exit                         | `exit`                                       | `exit`                                                  |
