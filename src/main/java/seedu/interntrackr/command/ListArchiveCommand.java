@@ -45,7 +45,7 @@ public class ListArchiveCommand extends Command {
         for (int i = 1; i <= applications.getSize(); i++) {
             Application app = applications.getApplication(i);
             if (app.isArchived()) {
-                ui.showMessage(displayIndex + ". " + app.toString());
+                ui.showMessage(displayIndex + ". " + app.toSummaryString());
                 if (app.getNote() != null && !app.getNote().isBlank()) {
                     ui.showMessage("   Note: " + app.getNote());
                 }

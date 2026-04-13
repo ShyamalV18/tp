@@ -13,11 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class DeadlineDoneCommandParserTest {
 
     private static final String COMBINED_USAGE =
-            "Invalid format. Usage: deadline add INDEX t/TYPE d/DD-MM-YYYY [n/NOTES]"
-                    + System.lineSeparator()
-                    + "Invalid format. Usage: deadline done INDEX i/DEADLINE_INDEX"
-                    + System.lineSeparator()
-                    + "Invalid format. Usage: deadline list INDEX";
+            "Invalid command format!\n"
+                    + "Available deadline commands:\n"
+                    + "  deadline add INDEX t/TYPE d/DD-MM-YYYY\n"
+                    + "  deadline list INDEX\n"
+                    + "  deadline done INDEX i/DEADLINE_INDEX\n"
+                    + "  deadline undone INDEX i/DEADLINE_INDEX\n"
+                    + "  deadline delete INDEX i/DEADLINE_INDEX";
 
     private static final String DEADLINE_DONE_USAGE =
             "Invalid format. Usage: deadline done INDEX i/DEADLINE_INDEX";
@@ -95,7 +97,7 @@ public class DeadlineDoneCommandParserTest {
         InternTrackrException exception = assertThrows(InternTrackrException.class,
                 () -> DeadlineCommandParser.parse("done one i/1"));
 
-        assertEquals("The application index and deadline index must be numbers.",
+        assertEquals("The application index and deadline index must be valid positive numbers.",
                 exception.getMessage());
     }
 
@@ -104,7 +106,7 @@ public class DeadlineDoneCommandParserTest {
         InternTrackrException exception = assertThrows(InternTrackrException.class,
                 () -> DeadlineCommandParser.parse("done 1 i/one"));
 
-        assertEquals("The application index and deadline index must be numbers.",
+        assertEquals("The application index and deadline index must be valid positive numbers.",
                 exception.getMessage());
     }
 
@@ -113,7 +115,7 @@ public class DeadlineDoneCommandParserTest {
         InternTrackrException exception = assertThrows(InternTrackrException.class,
                 () -> DeadlineCommandParser.parse("done one i/two"));
 
-        assertEquals("The application index and deadline index must be numbers.",
+        assertEquals("The application index and deadline index must be valid positive numbers.",
                 exception.getMessage());
     }
 }

@@ -18,9 +18,9 @@ public class DeadlineAddCommandParserTest {
     }
 
     @Test
-    public void parse_validArgumentsWithNotes_returnsDeadlineCommand() throws InternTrackrException {
-        assertTrue(DeadlineCommandParser.parse(
-                "add 1 t/Interview d/15-07-2026 n/Prepare for coding round") instanceof DeadlineAddCommand);
+    public void parse_extraArgumentsInDate_throwsInternTrackrException() {
+        assertThrows(InternTrackrException.class,
+                () -> DeadlineCommandParser.parse("add 1 t/Interview d/15-07-2026 n/Prepare for coding round"));
     }
 
     @Test

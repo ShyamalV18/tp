@@ -54,6 +54,21 @@ deadline list
 deadline list abc
 deadline list 99
 deadline list 1
+deadline undone
+deadline undone abc i/1
+deadline undone 99 i/1
+deadline undone 1
+deadline undone 1 i/abc
+deadline undone 1 i/99
+deadline undone 1 i/1
+deadline undone 1 i/1
+deadline delete
+deadline delete abc i/1
+deadline delete 99 i/1
+deadline delete 1
+deadline delete 1 i/abc
+deadline delete 1 i/99
+deadline delete 1 i/1
 offer 1
 offer abc s/5000
 offer 99 s/5000

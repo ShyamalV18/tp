@@ -40,6 +40,20 @@ public class DeadlineList {
     }
 
     /**
+     * Deletes a deadline at the specified 1-based index from the list.
+     *
+     * @param index The 1-based index of the deadline.
+     * @return The removed Deadline.
+     * @throws IndexOutOfBoundsException If the index is out of range.
+     */
+    public Deadline deleteDeadline(int index) {
+        assert index > 0 && index <= deadlines.size() : "Deadline index out of bounds";
+        Deadline removed = deadlines.remove(index - 1);
+        logger.fine("Deleted deadline: " + removed.getDeadlineType());
+        return removed;
+    }
+
+    /**
      * Returns the number of deadlines in the list.
      *
      * @return The size of the list.
@@ -71,6 +85,7 @@ public class DeadlineList {
 
     /**
      * Returns a formatted string representation of the deadlines assigned to this application.
+     * Replaces internal Array output structure with a clean comma-separated list or "-".
      *
      * @return A human-readable string representation of this list of deadlines.
      */
@@ -81,14 +96,10 @@ public class DeadlineList {
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < deadlines.size(); i++) {
-            if (i > 0) {
+            sb.append(deadlines.get(i).toString());
+            if (i < deadlines.size() - 1) {
                 sb.append(", ");
             }
-            sb.append(deadlines.get(i).getDeadlineType())
-                    .append(" (")
-                    .append(deadlines.get(i).getDueDate())
-                    .append(")")
-                    .append(deadlines.get(i).getIsDone() ? " [Done]" : " [Pending]");
         }
         return sb.toString();
     }

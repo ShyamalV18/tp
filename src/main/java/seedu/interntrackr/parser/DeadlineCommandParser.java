@@ -3,12 +3,15 @@ package seedu.interntrackr.parser;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.logging.Logger;
 
 import seedu.interntrackr.command.Command;
 import seedu.interntrackr.command.DeadlineAddCommand;
+import seedu.interntrackr.command.DeadlineDeleteCommand;
 import seedu.interntrackr.command.DeadlineDoneCommand;
 import seedu.interntrackr.command.DeadlineListCommand;
+import seedu.interntrackr.command.DeadlineUndoneCommand;
 import seedu.interntrackr.exception.InternTrackrException;
 
 /**
@@ -19,17 +22,28 @@ public class DeadlineCommandParser {
 
     private static final String PREFIX_TYPE = " t/";
     private static final String PREFIX_DATE = " d/";
-    private static final String PREFIX_NOTES = " n/";
-    private static final String DATE_FORMAT = "dd-MM-yyyy";
+    private static final String DATE_FORMAT = "dd-MM-uuuu";
     private static final String PREFIX_DEADLINE_INDEX = " i/";
 
-
     private static final String DEADLINE_ADD_USAGE =
-            "Invalid format. Usage: deadline add INDEX t/TYPE d/DD-MM-YYYY [n/NOTES]";
+            "Invalid format. Usage: deadline add INDEX t/TYPE d/DD-MM-YYYY";
     private static final String DEADLINE_DONE_USAGE =
             "Invalid format. Usage: deadline done INDEX i/DEADLINE_INDEX";
+    private static final String DEADLINE_UNDONE_USAGE =
+            "Invalid format. Usage: deadline undone INDEX i/DEADLINE_INDEX";
+    private static final String DEADLINE_DELETE_USAGE =
+            "Invalid format. Usage: deadline delete INDEX i/DEADLINE_INDEX";
     private static final String DEADLINE_LIST_USAGE =
             "Invalid format. Usage: deadline list INDEX";
+
+    private static final String DEADLINE_USAGE =
+            "Invalid command format!\n"
+                    + "Available deadline commands:\n"
+                    + "  deadline add INDEX t/TYPE d/DD-MM-YYYY\n"
+                    + "  deadline list INDEX\n"
+                    + "  deadline done INDEX i/DEADLINE_INDEX\n"
+                    + "  deadline undone INDEX i/DEADLINE_INDEX\n"
+                    + "  deadline delete INDEX i/DEADLINE_INDEX";
 
     /**
      * Parses the given arguments and returns the corresponding deadline command.
@@ -39,13 +53,8 @@ public class DeadlineCommandParser {
      * @throws InternTrackrException If the format is invalid.
      */
     public static Command parse(String arguments) throws InternTrackrException {
-        // TODO: change test to match, originally throws deadline add exception
         if (arguments == null || arguments.isBlank()) {
-            throw new InternTrackrException(
-                    DEADLINE_ADD_USAGE + System.lineSeparator()
-                            + DEADLINE_DONE_USAGE + System.lineSeparator()
-                            + DEADLINE_LIST_USAGE
-            );
+            throw new InternTrackrException(DEADLINE_USAGE);
         }
 
         String[] parts = arguments.trim().split(" ", 2);
@@ -57,15 +66,14 @@ public class DeadlineCommandParser {
             return parseAddCommand(subcommandArgs);
         case "done":
             return parseDoneCommand(subcommandArgs);
+        case "undone":
+            return parseUndoneCommand(subcommandArgs);
+        case "delete":
+            return parseDeleteCommand(subcommandArgs);
         case "list":
             return parseListCommand(subcommandArgs);
         default:
-            // TODO: change test to match, originally throws deadline add exception
-            throw new InternTrackrException(
-                    DEADLINE_ADD_USAGE + System.lineSeparator()
-                            + DEADLINE_DONE_USAGE + System.lineSeparator()
-                            + DEADLINE_LIST_USAGE
-            );
+            throw new InternTrackrException(DEADLINE_USAGE);
         }
     }
 
@@ -85,57 +93,86 @@ public class DeadlineCommandParser {
             }
 
             int index = Integer.parseInt(arguments.substring(0, typeIndex).trim());
+            if (index <= 0) {
+                throw new InternTrackrException("The application index must be a positive number.");
+            }
+
             String deadlineType = arguments.substring(
                     typeIndex + PREFIX_TYPE.length(), dateIndex).trim().replace("\"", "");
-            String dueDateStr = extractDueDateStr(arguments, dateIndex, deadlineType);
+            String dueDateStr = arguments.substring(dateIndex + PREFIX_DATE.length()).trim().replace("\"", "");
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+            if (deadlineType.isEmpty() || dueDateStr.isEmpty()) {
+                logger.warning("Deadline type or due date is empty.");
+                throw new InternTrackrException("Deadline type and due date cannot be empty.");
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
+                    .withResolverStyle(ResolverStyle.STRICT);
             LocalDate dueDate = LocalDate.parse(dueDateStr, formatter);
+
+            if (dueDate.isBefore(LocalDate.now())) {
+                throw new InternTrackrException("Deadline date cannot be in the past.");
+            }
 
             logger.fine("Parsed: DeadlineAddCommand index=" + index + " type=" + deadlineType);
             return new DeadlineAddCommand(index, deadlineType, dueDate);
 
         } catch (NumberFormatException e) {
-            logger.warning("Deadline index is not a number.");
-            throw new InternTrackrException("The application index must be a number.");
+            logger.warning("Deadline index is not a valid number.");
+            throw new InternTrackrException("The application index must be a valid positive number.");
         } catch (DateTimeParseException e) {
             logger.warning("Deadline date format invalid.");
-            throw new InternTrackrException("Invalid date format. Use DD-MM-YYYY.");
+            throw new InternTrackrException("Invalid date format or non-existent date. Use valid DD-MM-YYYY.");
         }
     }
 
     private static DeadlineDoneCommand parseDoneCommand(String arguments) throws InternTrackrException {
-        if (arguments.isBlank() || !arguments.contains(PREFIX_DEADLINE_INDEX)) {
-            logger.warning("Deadline done command missing i/ parameter.");
-            throw new InternTrackrException(DEADLINE_DONE_USAGE);
+        int[] indices = parseTwoIndices(arguments, PREFIX_DEADLINE_INDEX, DEADLINE_DONE_USAGE);
+        return new DeadlineDoneCommand(indices[0], indices[1]);
+    }
+
+    private static DeadlineUndoneCommand parseUndoneCommand(String arguments) throws InternTrackrException {
+        int[] indices = parseTwoIndices(arguments, PREFIX_DEADLINE_INDEX, DEADLINE_UNDONE_USAGE);
+        return new DeadlineUndoneCommand(indices[0], indices[1]);
+    }
+
+    private static DeadlineDeleteCommand parseDeleteCommand(String arguments) throws InternTrackrException {
+        int[] indices = parseTwoIndices(arguments, PREFIX_DEADLINE_INDEX, DEADLINE_DELETE_USAGE);
+        return new DeadlineDeleteCommand(indices[0], indices[1]);
+    }
+
+    private static int[] parseTwoIndices(String arguments, String prefix, String usageMsg)
+            throws InternTrackrException {
+        if (arguments.isBlank() || !arguments.contains(prefix)) {
+            logger.warning("Command missing prefix: " + prefix);
+            throw new InternTrackrException(usageMsg);
         }
 
         try {
-            int deadlineIndexPrefixPos = arguments.indexOf(PREFIX_DEADLINE_INDEX);
-            if (deadlineIndexPrefixPos == -1) {
-                logger.warning("Deadline done command missing deadline index prefix.");
-                throw new InternTrackrException(DEADLINE_DONE_USAGE);
+            int prefixPos = arguments.indexOf(prefix);
+            if (prefixPos == -1) {
+                throw new InternTrackrException(usageMsg);
             }
 
-            String applicationIndexStr = arguments.substring(0, deadlineIndexPrefixPos).trim();
-            String deadlineIndexStr = arguments.substring(
-                    deadlineIndexPrefixPos + PREFIX_DEADLINE_INDEX.length()).trim();
+            String appIndexStr = arguments.substring(0, prefixPos).trim();
+            String deadlineIndexStr = arguments.substring(prefixPos + prefix.length()).trim();
 
-            if (applicationIndexStr.isEmpty() || deadlineIndexStr.isEmpty()) {
-                logger.warning("Deadline done command has empty application or deadline index.");
-                throw new InternTrackrException(DEADLINE_DONE_USAGE);
+            if (appIndexStr.isEmpty() || deadlineIndexStr.isEmpty()) {
+                throw new InternTrackrException(usageMsg);
             }
 
-            int applicationIndex = Integer.parseInt(applicationIndexStr);
+            int appIndex = Integer.parseInt(appIndexStr);
             int deadlineIndex = Integer.parseInt(deadlineIndexStr);
 
-            logger.fine("Parsed: DeadlineDoneCommand applicationIndex="
-                    + applicationIndex + " deadlineIndex=" + deadlineIndex);
-            return new DeadlineDoneCommand(applicationIndex, deadlineIndex);
+            if (appIndex <= 0 || deadlineIndex <= 0) {
+                throw new InternTrackrException("Indices must be valid positive numbers.");
+            }
+
+            return new int[]{appIndex, deadlineIndex};
 
         } catch (NumberFormatException e) {
-            logger.warning("Deadline done indices are not valid numbers.");
-            throw new InternTrackrException("The application index and deadline index must be numbers.");
+            logger.warning("Indices are not valid numbers.");
+            throw new InternTrackrException("The application index and deadline index must be valid positive numbers.");
         }
     }
 
@@ -146,27 +183,14 @@ public class DeadlineCommandParser {
 
         try {
             int index = Integer.parseInt(arguments.trim());
+            if (index <= 0) {
+                throw new InternTrackrException("The application index must be a positive number.");
+            }
             logger.fine("Parsed: DeadlineListCommand index=" + index);
             return new DeadlineListCommand(index);
         } catch (NumberFormatException e) {
             logger.warning("Deadline list index is not a number.");
-            throw new InternTrackrException("The application index must be a number.");
+            throw new InternTrackrException("The application index must be a valid positive number.");
         }
-    }
-
-    private static String extractDueDateStr(String subArgs, int dateIndex, String deadlineType)
-            throws InternTrackrException {
-        String dueDateStr = subArgs.substring(dateIndex + PREFIX_DATE.length()).trim().replace("\"", "");
-
-        int notesIndex = dueDateStr.indexOf(PREFIX_NOTES);
-        if (notesIndex != -1) {
-            dueDateStr = dueDateStr.substring(0, notesIndex).trim();
-        }
-
-        if (deadlineType.isEmpty() || dueDateStr.isEmpty()) {
-            logger.warning("Deadline type or due date is empty.");
-            throw new InternTrackrException("Deadline type and due date cannot be empty.");
-        }
-        return dueDateStr;
     }
 }
