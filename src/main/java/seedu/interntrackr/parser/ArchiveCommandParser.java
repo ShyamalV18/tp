@@ -16,15 +16,20 @@ public class ArchiveCommandParser {
      *
      * @param arguments The argument string following the "archive" keyword.
      * @return A new ArchiveCommand with the parsed index.
-     * @throws InternTrackrException If the index is missing, non-numeric, or non-positive.
+     * @throws InternTrackrException If the index is missing, non-numeric, non-positive, or has trailing text.
      */
     public static ArchiveCommand parse(String arguments) throws InternTrackrException {
         if (arguments.isEmpty()) {
             logger.warning("Archive command missing index.");
             throw new InternTrackrException("Invalid format. Usage: archive INDEX");
         }
+        String trimmed = arguments.trim();
+        if (trimmed.contains(" ")) {
+            logger.warning("Archive command has trailing text: \"" + trimmed + "\"");
+            throw new InternTrackrException("Invalid format. Usage: archive INDEX");
+        }
         try {
-            int index = Integer.parseInt(arguments.trim());
+            int index = Integer.parseInt(trimmed);
             if (index <= 0) {
                 logger.warning("Archive index is non-positive: " + index);
                 throw new InternTrackrException("Index must be a positive integer.");
@@ -32,8 +37,8 @@ public class ArchiveCommandParser {
             logger.fine("Parsed: ArchiveCommand index=" + index);
             return new ArchiveCommand(index);
         } catch (NumberFormatException e) {
-            logger.warning("Archive index is not a number: \"" + arguments.trim() + "\"");
-            throw new InternTrackrException("The application index must be a number.");
+            logger.warning("Archive index is not a number: \"" + trimmed + "\"");
+            throw new InternTrackrException("Invalid format. Usage: archive INDEX");
         }
     }
 }

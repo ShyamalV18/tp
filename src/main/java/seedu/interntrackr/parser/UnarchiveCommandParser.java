@@ -16,15 +16,20 @@ public class UnarchiveCommandParser {
      *
      * @param arguments The argument string following the "unarchive" keyword.
      * @return A new UnarchiveCommand with the parsed index.
-     * @throws InternTrackrException If the index is missing, non-numeric, or non-positive.
+     * @throws InternTrackrException If the index is missing, non-numeric, non-positive, or has trailing text.
      */
     public static UnarchiveCommand parse(String arguments) throws InternTrackrException {
         if (arguments.isEmpty()) {
             logger.warning("Unarchive command missing index.");
             throw new InternTrackrException("Invalid format. Usage: unarchive INDEX");
         }
+        String trimmed = arguments.trim();
+        if (trimmed.contains(" ")) {
+            logger.warning("Unarchive command has trailing text: \"" + trimmed + "\"");
+            throw new InternTrackrException("Invalid format. Usage: unarchive INDEX");
+        }
         try {
-            int index = Integer.parseInt(arguments.trim());
+            int index = Integer.parseInt(trimmed);
             if (index <= 0) {
                 logger.warning("Unarchive index is non-positive: " + index);
                 throw new InternTrackrException("Index must be a positive integer.");
@@ -32,8 +37,8 @@ public class UnarchiveCommandParser {
             logger.fine("Parsed: UnarchiveCommand index=" + index);
             return new UnarchiveCommand(index);
         } catch (NumberFormatException e) {
-            logger.warning("Unarchive index is not a number: \"" + arguments.trim() + "\"");
-            throw new InternTrackrException("The application index must be a number.");
+            logger.warning("Unarchive index is not a number: \"" + trimmed + "\"");
+            throw new InternTrackrException("Invalid format. Usage: unarchive INDEX");
         }
     }
 }
