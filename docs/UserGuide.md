@@ -253,6 +253,7 @@ Filter cleared. Showing all applications:
 > **Note:** The `filter` command only affects the display. For all commands that take an `INDEX`
 > (e.g., `status`, `contact`, `offer`, `archive`), the index always corresponds to the position
 > shown in the default `list` output, not the filtered view.
+> Filtering can only be done on active applications (i.e. does not search through archived applications)
 
 ### Finding applications : `find`
 
