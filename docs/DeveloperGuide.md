@@ -149,16 +149,11 @@ each with its own deadline. Supporting multiple deadlines improves realism and e
 
 **Aspect: Passing dependencies to read-only commands (`Overview`, `Help`)**
 
-* **Alternative 1:** Pass a valid `Storage` object to every command for consistency.
-* **Alternative 2 (Current Choice):** Pass `null` for `Storage` when calling read-only commands.
-* **Reasoning:** Since `OverviewCommand` and `HelpCommand` never write anything, giving them a live `Storage` reference risks accidental side effects. Passing `null` (guarded by `assert` statements) keeps the execution lightweight and the intent clear.
+* **Alternative 1 (Current Choice):** Pass a valid `Storage` reference to every command for consistency.
+* **Reasoning:** Since all commands share the same `execute(ApplicationList, Ui, Storage)` interface, the main loop always passes `storage` uniformly. Read-only commands such as `OverviewCommand` and `HelpCommand` simply ignore the `storage` parameter. This keeps the main loop simple and avoids any special-casing based on command type.
 
-**Aspect: Passing dependencies to read-only commands (`Overview`, `Help`)**
-
-* **Alternative 1:** Pass a valid `Storage` object to every command for consistency.
-* **Alternative 2 (Current Choice):** Pass `null` for `Storage` when calling read-only commands.
-* **Reasoning:** Since `OverviewCommand` and `HelpCommand` never write anything, giving them a live `Storage` reference risks accidental side effects. Passing `null` (guarded by `assert` statements) keeps the execution lightweight and the intent clear.
-
+* **Alternative 2:** Pass `null` for `Storage` when calling read-only commands.
+* **Reasoning against:** Although read-only commands do not use `Storage`, passing `null` would require every call site to know which commands are "read-only", breaking the uniform command interface and risking `NullPointerException` if that assumption ever changes.
 ---
 
 <!-- @@author Shyamal -->
