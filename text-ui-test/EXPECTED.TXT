@@ -241,7 +241,7 @@ ____________________________________________________________
 Error: Invalid format. Usage: archive INDEX
 ____________________________________________________________
 ____________________________________________________________
-Error: The application index must be a number.
+Error: Invalid format. Usage: archive INDEX
 ____________________________________________________________
 ____________________________________________________________
 Error: Invalid application index. Please provide a number between 1 and 7.
@@ -305,7 +305,7 @@ ____________________________________________________________
 Error: Invalid format. Usage: delete INDEX  OR  delete archive INDEX
 ____________________________________________________________
 ____________________________________________________________
-Error: The application index must be a number.
+Error: Invalid format. Usage: delete INDEX  OR  delete archive INDEX
 ____________________________________________________________
 ____________________________________________________________
 Error: Invalid application index. Please provide a number between 1 and 5.

@@ -22,7 +22,7 @@ public class DeleteCommandParser {
      *
      * @param arguments The argument string following the "delete" keyword.
      * @return A new DeleteCommand with the parsed index and archive flag.
-     * @throws InternTrackrException If the index is missing, non-numeric, or non-positive.
+     * @throws InternTrackrException If the index is missing, non-numeric, non-positive, or has trailing text.
      */
     public static DeleteCommand parse(String arguments) throws InternTrackrException {
         if (arguments.isEmpty()) {
@@ -42,6 +42,14 @@ public class DeleteCommandParser {
             }
         }
 
+        if (indexPart.contains(" ")) {
+            logger.warning("Delete command has trailing text: \"" + indexPart + "\"");
+            String usage = isArchived
+                    ? "Invalid format. Usage: delete archive INDEX"
+                    : "Invalid format. Usage: delete INDEX  OR  delete archive INDEX";
+            throw new InternTrackrException(usage);
+        }
+
         try {
             int index = Integer.parseInt(indexPart);
             if (index <= 0) {
@@ -52,7 +60,10 @@ public class DeleteCommandParser {
             return new DeleteCommand(index, isArchived);
         } catch (NumberFormatException e) {
             logger.warning("Delete index is not a number: \"" + indexPart + "\"");
-            throw new InternTrackrException("The application index must be a number.");
+            String usage = isArchived
+                    ? "Invalid format. Usage: delete archive INDEX"
+                    : "Invalid format. Usage: delete INDEX  OR  delete archive INDEX";
+            throw new InternTrackrException(usage);
         }
     }
 }

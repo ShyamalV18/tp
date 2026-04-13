@@ -3,16 +3,27 @@ actor User
 participant ":Parser" as P
 participant ":ListArchiveCommand" as LAC
 participant ":ApplicationList" as AL
+participant ":Ui" as UI
 
 User -> P : parse("list archive")
-note right of P : Handled directly, no parser class
+note right of P : Handled directly, no parser class.
 P --> LAC : create
 
-LAC -> AL : getApplication(i) [for each]
-note right of LAC
-  First pass counts archived apps.
-  Second pass displays them with
-  a sequential display index.
-end note
-LAC --> User : archived applications or empty message
+loop first pass: count archived apps
+    LAC -> AL : getApplication(i)
+    AL --> LAC : app
+end
+
+alt no archived applications
+    LAC -> UI : showMessage("No archived applications found.")
+    UI --> User : empty message
+else archived applications exist
+    LAC -> UI : showMessage(header)
+    loop second pass: display each archived app
+        LAC -> AL : getApplication(i)
+        AL --> LAC : app
+        LAC -> UI : showMessage(app details)
+    end
+    UI --> User : archived applications list
+end
 @enduml

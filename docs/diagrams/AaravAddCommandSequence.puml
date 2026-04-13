@@ -2,15 +2,27 @@
 actor User
 participant ":Parser" as P
 participant ":AddCommand" as AC
+participant "newApp:Application" as APP
 participant ":ApplicationList" as AL
+participant ":Ui" as UI
 participant ":Storage" as S
 
 User -> P : parse("add c/Google r/SWE")
 P --> AC : create
 
-AC -> AL : hasApplication(...)
-AL --> AC : false
-AC -> AL : addApplication(...)
-AC --> User : confirmation message
-AC -> S : save(...)
+AC --> APP : create
+
+AC -> AL : hasApplication(newApp)
+
+alt duplicate found
+    AL --> AC : true
+    AC -> UI : showMessage(duplicate warning)
+    UI --> User : duplicate warning
+else no duplicate
+    AL --> AC : false
+    AC -> AL : addApplication(newApp)
+    AC -> UI : showMessage(confirmation)
+    UI --> User : confirmation message
+    AC -> S : save(...)
+end
 @enduml

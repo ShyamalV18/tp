@@ -641,8 +641,9 @@ The `DeleteCommandParser#parse()` method:
 
 1. Verifies that an index is provided.
 2. Checks if the argument begins with the keyword `archive`. If so, sets an `isArchived` flag to `true` and strips the keyword before parsing the remaining index.
-3. Parses the index as an integer.
-4. Rejects non-numeric or non-positive values with an `InternTrackrException`.
+3. Rejects any input containing trailing text after the index, showing the correct usage format in the error message.
+4. Parses the index as an integer.
+5. Rejects non-numeric or non-positive values with an `InternTrackrException`, showing the correct usage format in each case.
 
 This allows both `delete INDEX` (active applications) and `delete archive INDEX` (archived applications) to be supported from a single parser.
 
@@ -742,8 +743,9 @@ The feature is implemented through `ArchiveCommandParser` and `ArchiveCommand`.
 The `ArchiveCommandParser#parse()` method:
 
 1. Checks that an index is provided.
-2. Parses the index as an integer.
-3. Rejects non-numeric or non-positive values with an `InternTrackrException`.
+2. Rejects any input containing trailing text after the index.
+3. Parses the index as an integer.
+4. Rejects non-numeric or non-positive values with an `InternTrackrException`.
 
 **5.1.2 Execution Logic**
 
@@ -833,8 +835,9 @@ The feature is implemented through `UnarchiveCommandParser` and `UnarchiveComman
 The `UnarchiveCommandParser#parse()` method:
 
 1. Checks that an index is provided.
-2. Parses the index as an integer.
-3. Rejects non-numeric or non-positive values with an `InternTrackrException`.
+2. Rejects any input containing trailing text after the index.
+3. Parses the index as an integer.
+4. Rejects non-numeric or non-positive values with an `InternTrackrException`.
 
 **7.1.2 Execution Logic**
 

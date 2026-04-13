@@ -4,6 +4,7 @@ participant ":Parser" as P
 participant ":UnarchiveCommand" as UC
 participant ":ApplicationList" as AL
 participant "app:Application" as app
+participant ":Ui" as UI
 participant ":Storage" as S
 
 User -> P : parse("unarchive 1")
@@ -12,6 +13,7 @@ P --> UC : create
 UC -> AL : getArchivedApplication(1)
 AL --> UC : app
 UC -> app : setArchived(false)
+UC -> UI : showMessage(confirmation)
+UI --> User : confirmation message
 UC -> S : save(...)
-UC --> User : confirmation message
 @enduml

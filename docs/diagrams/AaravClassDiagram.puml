@@ -3,20 +3,22 @@ abstract class Command {
     +execute(...)
 }
 
-class AddCommand
-class DeleteCommand
-class ArchiveCommand
-class UnarchiveCommand
-class ListArchiveCommand
+class XYZCommand
+note bottom of XYZCommand
+  AddCommand, DeleteCommand,
+  ArchiveCommand, UnarchiveCommand,
+  ListArchiveCommand
+end note
 
 class Parser {
     +{static} parse(fullCommand): Command
 }
 
-class AddCommandParser
-class DeleteCommandParser
-class ArchiveCommandParser
-class UnarchiveCommandParser
+class XYZCommandParser
+note bottom of XYZCommandParser
+  AddCommandParser, DeleteCommandParser,
+  ArchiveCommandParser, UnarchiveCommandParser
+end note
 
 class ApplicationList {
     +getActiveApplication(index)
@@ -32,22 +34,11 @@ class Application {
     +setArchived(boolean)
 }
 
-Command <|-- AddCommand
-Command <|-- DeleteCommand
-Command <|-- ArchiveCommand
-Command <|-- UnarchiveCommand
-Command <|-- ListArchiveCommand
+Command <|-- XYZCommand
 
-Parser ..> AddCommandParser : delegates to
-Parser ..> DeleteCommandParser : delegates to
-Parser ..> ArchiveCommandParser : delegates to
-Parser ..> UnarchiveCommandParser : delegates to
+Parser ..> XYZCommandParser : delegates to
 
-AddCommand ..> ApplicationList
-DeleteCommand ..> ApplicationList
-ArchiveCommand ..> ApplicationList
-UnarchiveCommand ..> ApplicationList
-ListArchiveCommand ..> ApplicationList
+XYZCommand ..> ApplicationList : uses
 
 ApplicationList "1" *-- "0..*" Application
 @enduml

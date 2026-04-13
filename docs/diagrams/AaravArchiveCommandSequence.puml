@@ -4,6 +4,7 @@ participant ":Parser" as P
 participant ":ArchiveCommand" as AC
 participant ":ApplicationList" as AL
 participant "app:Application" as app
+participant ":Ui" as UI
 participant ":Storage" as S
 
 User -> P : parse("archive 1")
@@ -12,6 +13,7 @@ P --> AC : create
 AC -> AL : getActiveApplication(1)
 AL --> AC : app
 AC -> app : setArchived(true)
+AC -> UI : showMessage(confirmation)
+UI --> User : confirmation message
 AC -> S : save(...)
-AC --> User : confirmation message
 @enduml
