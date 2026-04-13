@@ -12,11 +12,13 @@ import java.util.logging.Logger;
 
 /**
  * Deletes an existing internship application from the tracker.
+ * Supports deleting both active and archived applications.
  */
 public class DeleteCommand extends Command {
     private static final Logger logger = Logger.getLogger(DeleteCommand.class.getName());
 
     private final int index;
+    private final boolean isArchived;
 
     /**
      * Creates a DeleteCommand targeting the application at the specified 1-based
@@ -26,26 +28,33 @@ public class DeleteCommand extends Command {
      * @throws IllegalArgumentException If the index is not a positive integer.
      */
     public DeleteCommand(int index) {
-        if (index <= 0) {
-            throw new IllegalArgumentException("Index must be a positive integer (1-based).");
-        }
-
-        this.index = index;
-        logger.fine("DeleteCommand created for display index: " + index);
+        this(index, false);
     }
 
     /**
-     * Executes the delete command by removing the active application at the stored
-     * display index and saving the result.
+     * Creates a DeleteCommand targeting either an active or archived application
+     * at the specified 1-based display index.
      *
-     * <p>The index is resolved against the active (non-archived) entries only,
-     * so it always matches what the user sees in the {@code list} output.
-     * Archived applications cannot be deleted via this command; they must be
-     * managed through the archive workflow.</p>
+     * @param index      The 1-based display index of the application to delete.
+     * @param isArchived True to delete from the archived list; false for the active list.
+     * @throws IllegalArgumentException If the index is not a positive integer.
+     */
+    public DeleteCommand(int index, boolean isArchived) {
+        if (index <= 0) {
+            throw new IllegalArgumentException("Index must be a positive integer (1-based).");
+        }
+        this.index = index;
+        this.isArchived = isArchived;
+        logger.fine("DeleteCommand created for display index: " + index + " (archived=" + isArchived + ")");
+    }
+
+    /**
+     * Executes the delete command by removing the application at the stored display
+     * index from either the active or archived list, then saving the result.
      *
      * @param applications The current list of applications.
-     * @param ui The UI object used to display output to the user.
-     * @param storage The storage object used to persist the updated list.
+     * @param ui           The UI object used to display output to the user.
+     * @param storage      The storage object used to persist the updated list.
      * @throws InternTrackrException If the display index is out of range.
      */
     @Override
@@ -55,10 +64,11 @@ public class DeleteCommand extends Command {
         assert storage != null : "Storage must not be null";
         assert index > 0 : "Index must be positive at execution time";
 
-        logger.info("Executing DeleteCommand for display index: " + index);
+        logger.info("Executing DeleteCommand for display index: " + index + " (archived=" + isArchived + ")");
 
-        // Resolve display index against active entries — matches what the user sees in `list`
-        Application appToRemove = applications.getActiveApplication(index);
+        Application appToRemove = isArchived
+                ? applications.getArchivedApplication(index)
+                : applications.getActiveApplication(index);
 
         // Find the application's position in the backing list by object identity
         List<Application> all = new ArrayList<>(applications.getApplications());
@@ -70,7 +80,7 @@ public class DeleteCommand extends Command {
             }
         }
 
-        assert backingIndex > 0 : "Active application must be found in the backing list";
+        assert backingIndex > 0 : "Application must be found in the backing list";
         applications.deleteApplication(backingIndex);
 
         assert applications.getSize() >= 0 : "List size must be non-negative after deletion";
